@@ -18,18 +18,34 @@ import CheckoutBtn from "../buttons/CheckoutBtn";
 import { Button } from "../ui/button";
 import useCartStore from "@/store/cartStore";
 import { showToast } from "@/lib/showToast";
-import { CartItem } from "@/types";
+import { CartItem } from "../../types";
 import { formatPrice } from "@/lib/formatPrice";
 
 const Cart = () => {
-  const { cartItems, getTotalItems, removeFromCart, getTotalPrice } =
+  const { cartItems, getTotalItems, removeFromCart, getTotalPrice, updateQuantity } =
     useCartStore();
   const [showSheet, setShowSheet] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   const handleRovomeItemFromCart = (item: CartItem) => {
     removeFromCart(item.id);
-    showToast("Item Removed from Cart", item?.images[0] as string, item.name);
+    showToast("Item Removed from Cart", (item?.images && item.images[0]) || "", item.name);
+  };
+
+  const handleIncrement = (item: CartItem) => {
+    const newQty = item.quantity + 1;
+    updateQuantity(item.id, newQty);
+  };
+
+  const handleDecrement = (item: CartItem) => {
+    const newQty = item.quantity - 1;
+    if (newQty <= 0) {
+      // remove item when quantity goes to 0
+      removeFromCart(item.id);
+      showToast("Item Removed from Cart", (item?.images && item.images[0]) || "", item.name);
+    } else {
+      updateQuantity(item.id, newQty);
+    }
   };
 
   useEffect(() => {
@@ -68,33 +84,50 @@ const Cart = () => {
                 {cartItems.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center justify-start gap-2 p-2
-                      mt-2 border-b-2 border-t-gray-500"
+                    className=" flex items-center justify-center gap-4 p-2
+                       border-b-2 border-t-gray-500"
                   >
                     <Image
-                      className="rounded-full object-cover"
-                      src={item?.images && item?.images[0]}
-                      alt="product iamge"
-                      width={70}
-                      height={70}
+                      className="rounded object-contain"
+                      src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${item?.images && item?.images[0]}`}
+                      alt="product image"
+                      width={50}
+                      height={50}
                     />
                     <div className="space-y-2">
                       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
-                        <h2>{item.name.slice(0, 50)}...</h2>
+                        <h2 className="text-lg font-bold">{item.name.slice(0, 100)}</h2>
                       </div>
 
                       <div className="flex items-center justify-between">
                         <p className="text-lg border border-green-500 px-2 rounded-md text-green-500">
                           ${item.price}
                         </p>
-                        <p className="text-lg">Qty : {item.quantity}</p>
+                        <div className="w-40 inline-flex items-center justify-center gap-2">
+                          <Button
+                            size="md"
+                            onClick={() => handleDecrement(item)}
+                            variant="outline"
+                          >
+                            -
+                          </Button>
+                          <p className="mx-2 w-30 text-lg">{item.quantity}</p>
+                          <Button
+                            size="md"
+                            onClick={() => handleIncrement(item)}
+                            variant="outline"
+                          >
+                            +
+                          </Button>
+                        </div>
+
                         <Button
                           onClick={() => handleRovomeItemFromCart(item)}
                           variant={"destructive"}
                           size={"sm"}
                           className="rounded-full"
                         >
-                          <X />
+                          <X size={12} />
                         </Button>
                       </div>
                     </div>

@@ -81,7 +81,7 @@ const SingleProductCartView = ({ product }: { product: Product }) => {
         <div className="text-lg font-bold space-x-3 ">
           <span className="line-through text-muted-foreground">${price}</span>
           <span className="text-xl font-bold text-green-500">
-            ${discountedPrice.toFixed(2)}
+            ${discountedPrice}
           </span>
         </div>
       </div>

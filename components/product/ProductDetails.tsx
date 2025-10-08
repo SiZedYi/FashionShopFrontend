@@ -57,7 +57,7 @@ const ProductDetails = ({ product }: { product: Product }) => {
         <div className="">
           {/* Original Price */}
           <p className="text-muted-foreground line-through text-2xl">
-            ${product?.price}
+            ${product?.price.toFixed(2)}
           </p>
           <div className="flex items-center gap-4">
             {/* Discounted Price */}

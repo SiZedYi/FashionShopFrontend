@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import useCartStore from "@/store/cartStore";
+import { showToast } from "@/lib/showToast";
 import Link from "next/link";
 import { formatPrice } from "@/lib/formatPrice";
 
@@ -60,17 +61,24 @@ const CartItemsDetails = () => {
 
           <div className="flex items-center gap-2">
             <Button
-              disabled={item?.quantity === 1}
-              onClick={() => updateQuantity(item?.id, item?.quantity - 1)}
-              size={"sm"}
+              onClick={() => {
+                const newQty = (item?.quantity || 0) - 1;
+                if (newQty <= 0) {
+                  removeFromCart(item.id);
+                  showToast("Item Removed from Cart", (item?.images && item.images[0]) || "", item.name || "");
+                } else {
+                  updateQuantity(item?.id, newQty);
+                }
+              }}
+              size={"md"}
               variant={"outline"}
             >
               <Minus />
             </Button>
-            <p>{item.quantity}</p>
+            <p className="mx-2 w-30 text-lg">{item.quantity}</p>
             <Button
               onClick={() => updateQuantity(item.id, item.quantity + 1)}
-              size={"sm"}
+              size={"md"}
               variant={"outline"}
             >
               <Plus />
@@ -81,6 +89,7 @@ const CartItemsDetails = () => {
             <Button
               onClick={() => removeFromCart(item.id)}
               variant={"destructive"}
+              size={"md"}
             >
               <X />
             </Button>
