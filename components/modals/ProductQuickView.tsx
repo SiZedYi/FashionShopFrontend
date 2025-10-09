@@ -69,7 +69,6 @@ const ProductQuickViewModal = () => {
                   {/* Rating and Review */}
                   <RatingReview
                     rating={product.rating || 0}
-                    review={product.reviews.length || 0}
                   />
                   {/* Product Description */}
                   <ProductDescription description={product.description} />

@@ -30,7 +30,7 @@ const SingleProductListView = ({ product }: { product: Product }) => {
             {name.length > 45 && "..."}
           </h3>
         </div>
-        <RatingReview rating={rating} review={reviews.length} />
+        <RatingReview rating={rating} />
         <div className="text-lg font-bold space-x-2 my-4 ">
           <span className="line-through text-muted-foreground">${price}</span>
           <span className="text-xl font-bold text-green-500">

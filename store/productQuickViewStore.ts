@@ -17,19 +17,3 @@ export const useProductQuickViewStore = create<ProductQuickViewState>((set) => (
   },
   closeModal: () => set({ isOpen: false, product: null }),
 }));
-
-// Dummy function to fetch product data (replace this with your actual API call)
-// const fetchProduct = (productId: number): Product => {
-//   // Example dummy data
-//   return {
-//     id: productId,
-//     name: 'Product Name',
-//     category: 'Category',
-//     description: 'Product Description',
-//     rating: 4.5,
-//     reviews: 10,
-//     price: 50,
-//     discount: 0.2,
-//     images: ['image1.jpg', 'image2.jpg'],
-//   };
-// };

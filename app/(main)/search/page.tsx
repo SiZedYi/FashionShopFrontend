@@ -1,15 +1,15 @@
 import BreadcrumbComponent from "@/components/others/Breadcrumb";
 import SingleProductCartView from "@/components/product/SingleProductCartView";
 import SingleProductListView from "@/components/product/SingleProductListView";
-import { productsData } from "@/data/products/productsData";
+import { getAllProduct } from "@/service/product";
 import Link from "next/link";
 
-const SearchComponent = ({
+const SearchComponent = async ({
   searchParams,
 }: {
   searchParams: { query: string };
 }) => {
-
+  const productsData = await getAllProduct().then((res) => res?.data) || [];
   // Filter the products based on the search query
   const foundProducts = productsData.filter((product) =>
     product.name.toLowerCase().includes(searchParams.query.toLowerCase())
