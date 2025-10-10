@@ -11,6 +11,7 @@ import { X } from "lucide-react";
 import ProductColorSelection from "../product/ProductColorSelection";
 import ProductQuantityChange from "../product/ProductQuantityChange";
 import ProductTab from "../product/ProductTab";
+import { Product } from "../../types/product";
 import { calculateDiscount } from "@/lib/calculateDiscount";
 
 const ProductQuickViewModal = () => {
@@ -124,7 +125,6 @@ const ProductQuickViewModal = () => {
                   </div>
                   <ProductTab
                     aboutItem={product?.aboutItem!}
-                    reviews={product.reviews}
                   />
                 </div>
               </div>

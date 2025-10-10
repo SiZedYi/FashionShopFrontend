@@ -18,8 +18,8 @@ import CheckoutBtn from "../buttons/CheckoutBtn";
 import { Button } from "../ui/button";
 import useCartStore from "@/store/cartStore";
 import { showToast } from "@/lib/showToast";
-import { CartItem } from "../../types";
 import { formatPrice } from "@/lib/formatPrice";
+import { CartItem } from "@/types/cart";
 
 const Cart = () => {
   const { cartItems, getTotalItems, removeFromCart, getTotalPrice, updateQuantity } =
@@ -27,24 +27,27 @@ const Cart = () => {
   const [showSheet, setShowSheet] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
+
   const handleRovomeItemFromCart = (item: CartItem) => {
-    removeFromCart(item.id);
+    removeFromCart(item.id, item.selectedColor);
     showToast("Item Removed from Cart", (item?.images && item.images[0]) || "", item.name);
   };
 
+
   const handleIncrement = (item: CartItem) => {
     const newQty = item.quantity + 1;
-    updateQuantity(item.id, newQty);
+    updateQuantity(item.id, newQty, item.selectedColor);
   };
+
 
   const handleDecrement = (item: CartItem) => {
     const newQty = item.quantity - 1;
     if (newQty <= 0) {
       // remove item when quantity goes to 0
-      removeFromCart(item.id);
+      removeFromCart(item.id, item.selectedColor);
       showToast("Item Removed from Cart", (item?.images && item.images[0]) || "", item.name);
     } else {
-      updateQuantity(item.id, newQty);
+      updateQuantity(item.id, newQty, item.selectedColor);
     }
   };
 
@@ -87,13 +90,38 @@ const Cart = () => {
                     className=" flex items-center justify-center gap-4 p-2
                        border-b-2 border-t-gray-500"
                   >
-                    <Image
-                      className="rounded object-contain"
-                      src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${item?.images && item?.images[0]}`}
-                      alt="product image"
-                      width={50}
-                      height={50}
-                    />
+                    {(() => {
+                      let imgSrc = '';
+                      if (item.selectedColor && item.images && item.images.length > 0) {
+                        // Try to find the index of the selected color
+                        const productColors = item.color || [];
+                        let colorIdx = -1;
+                        if (Array.isArray(productColors)) {
+                          colorIdx = productColors.findIndex(c => c === item.selectedColor);
+                        }
+                        // fallback: if colorIdx not found, use first image
+                        imgSrc = `${process.env.NEXT_PUBLIC_IMAGE_URL}${item.images[colorIdx >= 0 ? colorIdx : 0]}`;
+                      } else if (item.images && item.images.length > 0) {
+                        imgSrc = `${process.env.NEXT_PUBLIC_IMAGE_URL}${item.images[0]}`;
+                      }
+                      return (
+                        <Image
+                          className="rounded object-contain"
+                          src={imgSrc}
+                          alt="product image"
+                          width={50}
+                          height={50}
+                        />
+                      );
+                    })()}
+                    {/* Color swatch */}
+                    {item.selectedColor && (
+                      <span
+                        className="inline-block w-5 h-5 rounded-full border ml-2 align-middle"
+                        style={{ backgroundColor: item.selectedColor, borderColor: '#ccc' }}
+                        title={item.selectedColor}
+                      />
+                    )}
                     <div className="space-y-2">
                       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
                         <h2 className="text-lg font-bold">{item.name.slice(0, 100)}</h2>

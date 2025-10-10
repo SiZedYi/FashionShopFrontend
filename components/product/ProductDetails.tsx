@@ -10,7 +10,7 @@ import ProductDescription from "./ProductDescription";
 import ProductColorSelection from "./ProductColorSelection";
 import Link from "next/link";
 import { calculateDiscount } from "@/lib/calculateDiscount";
-import { Product } from "@/service/product";
+import { Product } from "../../types/product";
 
 const ProductDetails = ({ product }: { product: Product }) => {
   const [quantity, setQuantity] = useState(1);
@@ -73,7 +73,7 @@ const ProductDetails = ({ product }: { product: Product }) => {
       </div>
       <div className="flex flex-col md:flex-row items-center gap-4 !my-6">
         {/* Add To Cart Button */}
-        <AddToCartBtn product={{ ...product, quantity, selectedColor }} />
+  <AddToCartBtn product={{ ...product, quantity, selectedColor }} />
         {/* Buy Now Button */}
         <BuyNowBtn product={{ ...product, quantity, selectedColor }} />
       </div>

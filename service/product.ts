@@ -28,7 +28,7 @@ export type PagedProducts = {
  */
 export async function getAllProduct(): Promise<PagedProducts | null> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product`, { cache: "no-store" });
 
     if (!res.ok) {
       // Try to get error message from response
@@ -43,17 +43,20 @@ export async function getAllProduct(): Promise<PagedProducts | null> {
     }
 
     const json = await res.json();
-    
+    console.log("API raw response:", JSON.stringify(json, null, 2));
+    json?.data?.forEach((p: any, i: number) => {
+      console.log(`Product #${i} images count:`, p.images?.length);
+    });
     // Basic validation: ensure shape contains data array
     if (!json || !Array.isArray(json.data)) {
-      throw new Error('Invalid product response shape');
+      throw new Error("Invalid product response shape");
     }
 
     return json as PagedProducts;
   } catch (error) {
     // Keep error handling here: log and return null so callers can handle gracefully
     // eslint-disable-next-line no-console
-    console.error('getAllProduct error:', error);
+    console.error("getAllProduct error:", error);
     return null;
   }
 }
@@ -62,9 +65,14 @@ export async function getAllProduct(): Promise<PagedProducts | null> {
  * Fetch product detail by id from the backend API.
  * Returns the Product on success, or null on failure.
  */
-export async function getProductDetail(productId: number | string): Promise<Product | null> {
+export async function getProductDetail(
+  productId: number | string
+): Promise<Product | null> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product/${productId}`);
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/product/${productId}`,
+      { cache: "no-store" }
+    );
 
     if (!res.ok) {
       let errText = `${res.status} ${res.statusText}`;
@@ -80,14 +88,14 @@ export async function getProductDetail(productId: number | string): Promise<Prod
     const json = await res.json();
 
     // Basic validation: expect object with id
-    if (!json || typeof json.id !== 'number') {
-      throw new Error('Invalid product detail response shape');
+    if (!json || typeof json.id !== "number") {
+      throw new Error("Invalid product detail response shape");
     }
 
     return json as Product;
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error('getProductDetail error:', error);
+    console.error("getProductDetail error:", error);
     return null;
   }
 }

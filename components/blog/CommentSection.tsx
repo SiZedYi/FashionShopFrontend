@@ -53,7 +53,6 @@ const CommentSection: React.FC = () => {
   // Function to handle form submission
   const onSubmit: SubmitHandler<CommentData> = (data) => {
     // Handle form submission here (e.g., send data to backend)
-    console.log(data);
     // Update comments state with new comment
     setComments([...comments, data]);
   };

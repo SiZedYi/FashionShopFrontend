@@ -9,49 +9,87 @@ import Link from "next/link";
 import { formatPrice } from "@/lib/formatPrice";
 
 const CartItemsDetails = () => {
+  const [isMounted, setIsMounted] = useState(false);
 
-  const [isMounted, setIsMounted] = useState(false)
+  const { cartItems, removeFromCart, updateQuantity, clearCart } =
+    useCartStore();
 
-  const {
-    cartItems,
-    removeFromCart,
-    updateQuantity,
-    clearCart,
-  } = useCartStore();
-
-
-  
   useEffect(() => {
-    setIsMounted(true)
-  },[])
+    setIsMounted(true);
+  }, []);
 
-
-  if(!isMounted){
-    return null
+  if (!isMounted) {
+    return null;
   }
 
-  if(cartItems?.length === 0){
-   return <div className="text-xl text-center p-2 lg:col-span-2">
-      Sorry, No Item Found In The Cart
-    </div>
+  if (cartItems?.length === 0) {
+    return (
+      <div className="text-xl text-center p-2 lg:col-span-2">
+        Sorry, No Item Found In The Cart
+      </div>
+    );
   }
 
   return (
-    <div className="space-x-2 lg:col-span-2" >
+    <div className="space-x-2 lg:col-span-2">
       {cartItems?.map((item) => (
         <div
           key={item?.id}
           className="flex flex-wrap items-center justify-between gap-1 md:gap-2 border-b border-gray-300 dark:border-gray-500 py-4 !m-0"
         >
           <div className="flex items-center space-x-4">
-            <Image
-              src={ item?.images && item?.images [0]}
-              alt="Product"
-              height={64}
-              width={64}
-              className="w-16 h-16 rounded-lg object-cover"
-            />
-            <Link href={`/shop/${item.id}`} className="text-xl font-semibold text-gray-900 dark:text-white hover:opacity-60">
+            {(() => {
+              let imgSrc = "";
+              if (item.selectedColor && item.images && item.images.length > 0) {
+                const productColors = item.color || [];
+
+                let colorIdx = -1;
+                if (Array.isArray(productColors)) {
+                  colorIdx = productColors.findIndex(
+                    (c) => c === item.selectedColor
+                  );
+                }
+                imgSrc = `${process.env.NEXT_PUBLIC_IMAGE_URL}${
+                  item.images[colorIdx >= 0 ? colorIdx : 0]
+                }`;
+                console.log(
+                  item,
+                  colorIdx,
+                  "productColors:",
+                  productColors,
+                  "selectedColor:",
+                  item.selectedColor,
+                  "colorIdx:",
+                  colorIdx
+                );
+              } else if (item.images && item.images.length > 0) {
+                imgSrc = `${process.env.NEXT_PUBLIC_IMAGE_URL}${item.images[0]}`;
+              }
+              return (
+                <Image
+                  src={imgSrc}
+                  alt="Product"
+                  height={64}
+                  width={64}
+                  className="w-16 h-16 rounded-lg object-cover"
+                />
+              );
+            })()}
+            {/* Color swatch */}
+            {item.selectedColor && (
+              <span
+                className="inline-block w-5 h-5 rounded-full border ml-2 align-middle"
+                style={{
+                  backgroundColor: item.selectedColor,
+                  borderColor: "#ccc",
+                }}
+                title={item.selectedColor}
+              />
+            )}
+            <Link
+              href={`/shop/${item.id}`}
+              className="text-xl font-semibold text-gray-900 dark:text-white hover:opacity-60"
+            >
               {item?.name?.slice(0, 30)}...
             </Link>
           </div>
@@ -64,10 +102,14 @@ const CartItemsDetails = () => {
               onClick={() => {
                 const newQty = (item?.quantity || 0) - 1;
                 if (newQty <= 0) {
-                  removeFromCart(item.id);
-                  showToast("Item Removed from Cart", (item?.images && item.images[0]) || "", item.name || "");
+                  removeFromCart(item.id, item.selectedColor);
+                  showToast(
+                    "Item Removed from Cart",
+                    (item?.images && item.images[0]) || "",
+                    item.name || ""
+                  );
                 } else {
-                  updateQuantity(item?.id, newQty);
+                  updateQuantity(item?.id, newQty, item.selectedColor);
                 }
               }}
               size={"md"}
@@ -77,7 +119,9 @@ const CartItemsDetails = () => {
             </Button>
             <p className="mx-2 w-30 text-lg">{item.quantity}</p>
             <Button
-              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+              onClick={() =>
+                updateQuantity(item.id, item.quantity + 1, item.selectedColor)
+              }
               size={"md"}
               variant={"outline"}
             >
@@ -87,7 +131,7 @@ const CartItemsDetails = () => {
 
           <div>
             <Button
-              onClick={() => removeFromCart(item.id)}
+              onClick={() => removeFromCart(item.id, item.selectedColor)}
               variant={"destructive"}
               size={"md"}
             >
@@ -97,7 +141,9 @@ const CartItemsDetails = () => {
         </div>
       ))}
       {cartItems?.length >= 1 && (
-        <Button variant={'outline'} className="my-2" onClick={clearCart}>Clear Cart</Button>
+        <Button variant={"outline"} className="my-2" onClick={clearCart}>
+          Clear Cart
+        </Button>
       )}
     </div>
   );
