@@ -792,6 +792,27 @@ input[type=email]:focus, input[type=password]:focus, input[type=text]:focus, inp
   color: #fff;
 }
 
+/* Style for Account dropdown in header to match navigation dropdown */
+.top-header .dropdown-slide .dropdown-menu {
+  right: 0;
+  left: auto;
+  border: none;
+}
+.top-header .dropdown-slide .dropdown-menu li a {
+  color: #222;
+  font-size: 12px;
+  border: 1px solid transparent;
+  display: block;
+  padding: 8px 16px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: 0.3s all;
+}
+.top-header .dropdown-slide .dropdown-menu li a:hover {
+  background-color: #000;
+  color: #fff;
+}
+
 .slider-item {
   text-align: center;
   background-size: cover;
