@@ -19,7 +19,7 @@ const DropdownMenuComponent = () => {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="p-6 space-y-2">
           <DropdownMenuItem>
-            <Link href={"/homepagetwo"}>Home Page Two</Link>
+            <Link href={"/HomePage"}>Home Page Two</Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
             <Link href={"/shoppagetwo"}>Shop Page Two</Link>

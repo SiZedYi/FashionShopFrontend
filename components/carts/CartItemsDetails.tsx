@@ -52,16 +52,6 @@ const CartItemsDetails = () => {
                 imgSrc = `${process.env.NEXT_PUBLIC_IMAGE_URL}${
                   item.images[colorIdx >= 0 ? colorIdx : 0]
                 }`;
-                console.log(
-                  item,
-                  colorIdx,
-                  "productColors:",
-                  productColors,
-                  "selectedColor:",
-                  item.selectedColor,
-                  "colorIdx:",
-                  colorIdx
-                );
               } else if (item.images && item.images.length > 0) {
                 imgSrc = `${process.env.NEXT_PUBLIC_IMAGE_URL}${item.images[0]}`;
               }

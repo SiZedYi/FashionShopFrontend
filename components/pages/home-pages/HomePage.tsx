@@ -1,8 +1,7 @@
 import BannerTwo from "@/components/banners/BannerTwo";
-import SpecialDeals from "@/components/banners/SpecialDeals";
 import LatestBlogPosts from "@/components/blog/LatestBlogPosts";
 import CategorySectionOne from "@/components/category/CategorySectionOne";
-import HeroBannerTwo from "@/components/hero/HeroBannerTwo";
+import HeroBanner from "@/components/hero/HeroBanner";
 import NewsLetterTwo from "@/components/newsLetter/NewsLetterTwo";
 import BenefitsSection from "@/components/others/BenefitSection";
 import Loader from "@/components/others/Loader";
@@ -10,11 +9,10 @@ import TestimonialsSection from "@/components/others/Testimonials";
 import ProductsCollectionTwo from "@/components/products/ProductsCollectionTwo";
 import React, { Suspense } from "react";
 
-const HomePageTwo = () => {
+const HomePage = () => {
   return (
     <div className="overflow-hidden">
-      <HeroBannerTwo />
-      <SpecialDeals textCenter={true} />
+      <HeroBanner />
       <Suspense fallback={<Loader />}>
         <CategorySectionOne />
       </Suspense>
@@ -28,4 +26,4 @@ const HomePageTwo = () => {
   );
 };
 
-export default HomePageTwo;
+export default HomePage;

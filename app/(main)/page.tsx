@@ -1,12 +1,11 @@
-import HomePageOne from "@/components/pages/home-pages/HomePageOne";
-import HomePageTwo from "@/components/pages/home-pages/HomePageTwo";
+import HomePage from "@/components/pages/home-pages/HomePage";
 
 export default  function Home() {
 
 
   return (
     <main>
-      <HomePageTwo />
+      <HomePage />
     </main>
   );
 }

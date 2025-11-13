@@ -43,7 +43,6 @@ export async function getAllProduct(): Promise<PagedProducts | null> {
     }
 
     const json = await res.json();
-    console.log("API raw response:", JSON.stringify(json, null, 2));
     json?.data?.forEach((p: any, i: number) => {
       console.log(`Product #${i} images count:`, p.images?.length);
     });
