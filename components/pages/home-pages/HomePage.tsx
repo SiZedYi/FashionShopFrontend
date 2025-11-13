@@ -1,6 +1,6 @@
 import BannerTwo from "@/components/banners/BannerTwo";
 import LatestBlogPosts from "@/components/blog/LatestBlogPosts";
-import CategorySectionOne from "@/components/category/CategorySectionOne";
+import CategorySection from "@/components/category/CategorySection";
 import HeroBanner from "@/components/hero/HeroBanner";
 import NewsLetterTwo from "@/components/newsLetter/NewsLetterTwo";
 import BenefitsSection from "@/components/others/BenefitSection";
@@ -14,7 +14,7 @@ const HomePage = () => {
     <div className="overflow-hidden">
       <HeroBanner />
       <Suspense fallback={<Loader />}>
-        <CategorySectionOne />
+        <CategorySection />
       </Suspense>
       <ProductsCollectionTwo />
       <BenefitsSection textCenter={true} />
