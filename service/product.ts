@@ -13,9 +13,13 @@ export type PagedProducts = {
  * Fetch all products (paged) from the backend API.
  * Returns the paged structure on success, or null on failure.
  */
-export async function getAllProduct(): Promise<PagedProducts | null> {
+export async function getAllProduct(
+  page: number = 1,
+  size: number = 10
+): Promise<PagedProducts | null> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product`, { cache: "no-store" });
+    const params = new URLSearchParams({ page: String(page), size: String(size) });
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product?${params.toString()}`, { cache: "no-store" });
 
     if (!res.ok) {
       // Try to get error message from response
@@ -29,7 +33,7 @@ export async function getAllProduct(): Promise<PagedProducts | null> {
       throw new Error(`Failed to fetch products: ${errText}`);
     }
 
-    const json = await res.json();
+  const json = await res.json();
     json?.data?.forEach((p: any, i: number) => {
       console.log(`Product #${i} images count:`, p.images?.length);
     });
