@@ -43,7 +43,7 @@ const CategorySection = () => {
           ))
         )}
         {!loading && categories.map((category) => {
-          const img = category.imageUrl ? `${process.env.NEXT_PUBLIC_IMAGE_URL}/${category.imageUrl}` : "/images/placeholder.png";
+          const img = category.images ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${category.images}` : "/images/placeholder.png";
           return (
             <div
               onClick={() => handleCategoryClick(category.name)}

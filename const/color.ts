@@ -1,0 +1,26 @@
+
+// Color options include a hex code and Tailwind class for pill background
+export const COLOR_OPTIONS = [
+  { name: "red", hex: "#ef4444", className: "bg-red-600" },
+  { name: "orange", hex: "#f97316", className: "bg-orange-600" },
+  { name: "amber", hex: "#f59e0b", className: "bg-amber-600" },
+  { name: "yellow", hex: "#eab308", className: "bg-yellow-500 text-black" },
+  { name: "lime", hex: "#84cc16", className: "bg-lime-600" },
+  { name: "green", hex: "#22c55e", className: "bg-green-600" },
+  { name: "emerald", hex: "#10b981", className: "bg-emerald-600" },
+  { name: "teal", hex: "#14b8a6", className: "bg-teal-600" },
+  { name: "cyan", hex: "#06b6d4", className: "bg-cyan-600" },
+  { name: "sky", hex: "#0ea5e9", className: "bg-sky-600" },
+  { name: "blue", hex: "#3b82f6", className: "bg-blue-600" },
+  { name: "indigo", hex: "#6366f1", className: "bg-indigo-600" },
+  { name: "violet", hex: "#8b5cf6", className: "bg-violet-600" },
+  { name: "purple", hex: "#a855f7", className: "bg-purple-600" },
+  { name: "pink", hex: "#ec4899", className: "bg-pink-600" },
+  { name: "rose", hex: "#f43f5e", className: "bg-rose-600" },
+  { name: "brown", hex: "#92400e", className: "bg-amber-800" },
+  { name: "gray", hex: "#6b7280", className: "bg-gray-600" },
+  { name: "slate", hex: "#64748b", className: "bg-slate-600" },
+  { name: "stone", hex: "#78716c", className: "bg-stone-600" },
+  { name: "black", hex: "#000000", className: "bg-black" },
+  { name: "white", hex: "#ffffff", className: "bg-white text-black border border-gray-300" },
+];
