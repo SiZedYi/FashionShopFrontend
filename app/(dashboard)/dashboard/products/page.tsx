@@ -2,11 +2,13 @@ import ProductActions from "@/components/dashboard/product/ProductActions";
 import ProductHeader from "@/components/dashboard/product/ProductHeader";
 import Loader from "@/components/others/Loader";
 import Pagination from "@/components/others/Pagination";
-import { productsData } from "@/data/products/productsData";
+import { getAllProduct } from "@/service/product";
 import Image from "next/image";
 import React, { Suspense } from "react";
 
-const ProductsPage = () => {
+const ProductsPage = async () => {
+  const products = await getAllProduct();
+  const productsData = products?.data || [];
   return (
     <div className="max-w-screen-xl mx-auto w-full bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 my-4">
       <ProductHeader />
@@ -36,7 +38,7 @@ const ProductsPage = () => {
               <tr key={product.id} className="bg-white dark:bg-gray-800">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <Image
-                    src={product.images[0]}
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${product.images[0]}`}
                     alt={product.name}
                     width={40}
                     height={40}
@@ -51,14 +53,14 @@ const ProductsPage = () => {
                   {product.category}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <ProductActions />
+                  <ProductActions productId={product.id} />
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
         <Suspense fallback={<Loader />}>
-          <Pagination totalPages={10} currentPage={1} pageName="productpage" />
+          <Pagination totalPages={10} currentPage={1} pageName="page" />
         </Suspense>
       </div>
     </div>

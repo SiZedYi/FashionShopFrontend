@@ -2,7 +2,7 @@ export interface Category {
 	id: number;
 	name: string;
 	description?: string;
-	imageUrl?: string; // relative path from CDN/asset base
+	images?: string; // relative path from CDN/asset base
 }
 
 export interface PagedCategories {
@@ -35,5 +35,22 @@ export async function getCategories(page = 1, size = 4): Promise<PagedCategories
 		console.error('getCategories error:', err);
 		return null;
 	}
+}
+
+// Fetch all categories across pages (no limit)
+export async function getAllCategories(): Promise<Category[]> {
+	const all: Category[] = [];
+	let page = 1;
+	const size = 100; // reasonable page size; will iterate until 'last'
+	while (true) {
+		const paged = await getCategories(page, size);
+		if (!paged) break;
+		if (Array.isArray(paged.data)) {
+			all.push(...paged.data);
+		}
+		if (paged.last) break;
+		page += 1;
+	}
+	return all;
 }
 

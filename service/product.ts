@@ -1,17 +1,4 @@
-export type Product = {
-  id: number;
-  name: string;
-  category?: string;
-  description?: string;
-  aboutItem?: string;
-  price: number;
-  discount?: number;
-  rating?: number;
-  stockItems?: number;
-  brand?: string;
-  color?: string[];
-  images?: string[];
-};
+import { Product } from "@/types/product";
 
 export type PagedProducts = {
   page: number;
@@ -97,4 +84,66 @@ export async function getProductDetail(
     console.error("getProductDetail error:", error);
     return null;
   }
+}
+
+/**
+ * Build a FormData payload for product create/update requests.
+ * The backend expects a multipart/form-data body with:
+ *  - productRequest: JSON (stringified)
+ *  - images: one or more file parts
+ */
+export function buildProductFormData(
+  productRequest: Record<string, any>,
+  images: File[]
+): FormData {
+  const fd = new FormData();
+  // Stringify JSON payload into a part named 'productRequest'
+  fd.append(
+    "product",
+    new Blob([JSON.stringify(productRequest)], { type: "application/json" })
+  );
+
+  // Append all images. Reusing the same key name is standard for arrays in multipart.
+  images.forEach((file) => {
+    if (file instanceof File) {
+      fd.append("images", file, file.name);
+    }
+  });
+
+  return fd;
+}
+
+/**
+ * Create a new product (POST /product)
+ */
+export async function createProduct(
+  productRequest: Record<string, any>,
+  images: File[]
+): Promise<Response> {
+  const fd = buildProductFormData(productRequest, images);
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product`, {
+    method: "POST",
+    body: fd,
+    // Do NOT set Content-Type manually for multipart; the browser will set the correct boundary.
+  });
+  return res;
+}
+
+/**
+ * Update an existing product (PUT /product/{id})
+ */
+export async function updateProduct(
+  productId: number | string,
+  productRequest: Record<string, any>,
+  images: File[]
+): Promise<Response> {
+  const fd = buildProductFormData(productRequest, images);
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/product/${productId}`,
+    {
+      method: "PUT",
+      body: fd,
+    }
+  );
+  return res;
 }

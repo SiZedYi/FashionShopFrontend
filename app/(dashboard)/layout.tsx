@@ -6,7 +6,7 @@ const layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div>
       <DashboardHeader />
-      <div className="max-w-screen-xl mx-auto  flex flex-col md:flex-row gap-2  md:px-8">
+      <div className="mx-auto  flex flex-col md:flex-row">
         <DashboardSidebar />
         {children}
       </div>

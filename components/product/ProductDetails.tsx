@@ -30,19 +30,23 @@ const ProductDetails = ({ product }: { product: Product }) => {
         {product?.name}
       </h2>
       {/* Rating and Review */}
-      <RatingReview
-        rating={product?.rating || 0}
-      />
+      <RatingReview rating={product?.rating || 0} />
       {/* Product Description */}
       <ProductDescription description={product?.description as string} />
 
       {/* product stock */}
       <div>
         {product.stockItems === 0 ? (
-          <p className="text-lg  w-fit rounded-md text-muted-foreground">out of stock</p>
+          <p className="text-lg  w-fit rounded-md text-muted-foreground">
+            out of stock
+          </p>
         ) : (
           <p className="text-lg w-fit rounded-md text-muted-foreground">
-            Only <span className="text-lg text-black dark:text-white">({product.stockItems})</span> items in stock
+            Only{" "}
+            <span className="text-lg text-black dark:text-white">
+              ({product.stockItems})
+            </span>{" "}
+            items in stock
           </p>
         )}
       </div>
@@ -73,7 +77,7 @@ const ProductDetails = ({ product }: { product: Product }) => {
       </div>
       <div className="flex flex-col md:flex-row items-center gap-4 !my-6">
         {/* Add To Cart Button */}
-  <AddToCartBtn product={{ ...product, quantity, selectedColor }} />
+        <AddToCartBtn product={{ ...product, quantity, selectedColor }} />
         {/* Buy Now Button */}
         <BuyNowBtn product={{ ...product, quantity, selectedColor }} />
       </div>
