@@ -19,7 +19,7 @@ const ProductsPage = async ({ searchParams }: PageProps) => {
   const page = Number(pageParam) > 0 ? Number(pageParam) : 1;
   const size = Number(sizeParam) > 0 ? Number(sizeParam) : 8;
 
-  const products = await getAllProduct(page, size);
+  const products = await getAllProduct({ page, size });
   const productsData = products?.data || [];
   const totalPages = products?.totalPages || 1;
   const currentPage = products?.page || page;

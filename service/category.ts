@@ -54,3 +54,14 @@ export async function getAllCategories(): Promise<Category[]> {
 	return all;
 }
 
+// Fetch categories for filter component (limited for UI purposes)
+export async function getCategoriesForFilter(size = 20): Promise<Category[]> {
+	try {
+		const paged = await getCategories(1, size);
+		return paged?.data || [];
+	} catch (err) {
+		console.error('getCategoriesForFilter error:', err);
+		return [];
+	}
+}
+

@@ -1,95 +1,80 @@
 "use client";
 import React, { Suspense, useEffect, useState } from "react";
 import ProductViewChange from "../product/ProductViewChange";
-import { productsData } from "@/data/products/productsData";
 import Pagination from "../others/Pagination";
 import SingleProductListView from "@/components/product/SingleProductListView";
-import { Product, SearchParams } from "@/types";
+import { Product } from "@/types/product";
 import SingleProductCartView from "../product/SingleProductCartView";
 import { Loader2 } from "lucide-react";
 import Loader from "../others/Loader";
+import { getAllProduct } from "@/service/product";
+
+interface FilterState {
+  category: string;
+  brand: string;
+  color: string;
+  minPrice: number;
+  maxPrice: number;
+}
 
 interface ShopPageContainerProps {
-  searchParams: SearchParams;
+  filters: FilterState;
   gridColumn?: number;
 }
 
 const ShopPageContainer = ({
-  searchParams,
+  filters,
   gridColumn,
 }: ShopPageContainerProps) => {
   const [loading, setLoading] = useState(true);
   const [listView, setListView] = useState(false);
-  const [filteredData, setFilteredData] = useState<Product[]>([]);
-  const [paginatedData, setPaginatedData] = useState<Product[]>([]);
-  const [currentPage, setCurrentPage] = useState(
-    Number(searchParams.page) || 1
-  );
-  const itemsPerPage = 6;
+  const [products, setProducts] = useState<Product[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
-  // Function to filter data based on search params
-  const filterData = () => {
-    let filteredProducts = productsData;
-
-    // Filter by category
-    if (searchParams.category) {
-      filteredProducts = filteredProducts.filter(
-        (product) => product.category === searchParams.category
-      );
-    }
-
-    // Filter by brand
-    if (searchParams.brand) {
-      filteredProducts = filteredProducts.filter(
-        (product) => product?.brand === searchParams.brand
-      );
-    }
-
-    // Filter by color
-    if (searchParams.color) {
-      filteredProducts = filteredProducts.filter((product) =>
-        product?.color.includes(searchParams.color)
-      );
-    }
-
-    // Filter by min and max price
-    if (searchParams.min && searchParams.max) {
-      const minPrice = parseFloat(searchParams.min);
-      const maxPrice = parseFloat(searchParams.max);
-      filteredProducts = filteredProducts.filter(
-        (product) => product.price >= minPrice && product.price <= maxPrice
-      );
-    }
-
-    // Apply other filters...
-
-    return filteredProducts;
-  };
-
-  // Update filtered data whenever search params change
+  // Reset to page 1 when filters change
   useEffect(() => {
-    setLoading(true);
-    const filteredProducts = filterData();
-    setFilteredData(filteredProducts!);
-    setCurrentPage(1); // Reset pagination to first page when filters change
-    setLoading(false);
+    setCurrentPage(1);
+  }, [filters]);
+
+  // Fetch products from API with filters whenever filters change
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const apiFilters = {
+          page: currentPage,
+          size: itemsPerPage,
+          category: filters.category || undefined,
+          brand: filters.brand || undefined,
+          color: filters.color || undefined,
+          minPrice: filters.minPrice || undefined,
+          maxPrice: filters.maxPrice || undefined,
+        };
+
+        const response = await getAllProduct(apiFilters);
+        
+        if (response) {
+          setProducts(response.data);
+          setTotalPages(response.totalPages);
+          setCurrentPage(response.page);
+        } else {
+          setProducts([]);
+          setTotalPages(1);
+        }
+      } catch (error) {
+        console.error('Failed to fetch products:', error);
+        setProducts([]);
+        setTotalPages(1);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
-
-  // change currentPage when searchparams page change
-  useEffect(() => {
-    setCurrentPage(Number(searchParams.page) || 1);
-  }, [searchParams.page]);
-
-  // Update paginated data whenever filtered data or pagination settings change
-  useEffect(() => {
-    setLoading(true);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const paginatedProducts = filteredData.slice(startIndex, endIndex);
-    setPaginatedData(paginatedProducts);
-    setLoading(false);
-  }, [filteredData, currentPage]);
+  }, [filters, currentPage]);
 
   if (loading) {
     return (
@@ -100,13 +85,13 @@ const ShopPageContainer = ({
     );
   }
 
-  if (paginatedData.length === 0) {
+  if (products.length === 0 && !loading) {
     return (
       <div className="h-screen w-full flex items-center justify-center flex-col gap-4 text-xl mx-auto font-semibold space-y-4">
         <ProductViewChange
           listView={listView}
           setListView={setListView}
-          totalPages={Math.ceil(filteredData.length / itemsPerPage)}
+          totalPages={totalPages}
           itemPerPage={itemsPerPage}
           currentPage={currentPage}
         />
@@ -121,7 +106,7 @@ const ShopPageContainer = ({
       <ProductViewChange
         listView={listView}
         setListView={setListView}
-        totalPages={Math.ceil(filteredData.length / itemsPerPage)}
+        totalPages={totalPages}
         itemPerPage={itemsPerPage}
         currentPage={currentPage}
       />
@@ -129,7 +114,7 @@ const ShopPageContainer = ({
       {/* showing product list or cart view based on state */}
       {listView === true && (
         <div className="max-w-screen-xl mx-auto overflow-hidden py-4 md:py-8 gap-4 lg:gap-6">
-          {paginatedData.map((product) => (
+          {products.map((product: Product) => (
             <SingleProductListView key={product.id} product={product} />
           ))}
         </div>
@@ -141,7 +126,7 @@ const ShopPageContainer = ({
             gridColumn || 3
           } overflow-hidden  gap-4 lg:gap-6`}
         >
-          {paginatedData.map((product) => (
+          {products.map((product: Product) => (
             <SingleProductCartView key={product.id} product={product} />
           ))}
         </div>
@@ -150,9 +135,9 @@ const ShopPageContainer = ({
       {/* product pagination here */}
       <Suspense fallback={<Loader />}>
         <Pagination
-          totalPages={Math.ceil(filteredData.length / itemsPerPage)}
+          totalPages={totalPages}
           currentPage={currentPage}
-          pageName="page"
+          onPageChange={setCurrentPage}
         />
       </Suspense>
     </div>

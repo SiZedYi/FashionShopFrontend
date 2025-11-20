@@ -9,16 +9,36 @@ export type PagedProducts = {
   data: Product[];
 };
 
+export interface ProductFilters {
+  page?: number;
+  size?: number;
+  category?: string;
+  brand?: string;
+  color?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  search?: string;
+}
+
 /**
- * Fetch all products (paged) from the backend API.
+ * Fetch all products (paged) from the backend API with optional filters.
  * Returns the paged structure on success, or null on failure.
  */
 export async function getAllProduct(
-  page: number = 1,
-  size: number = 10
+  filters: ProductFilters = {}
 ): Promise<PagedProducts | null> {
   try {
-    const params = new URLSearchParams({ page: String(page), size: String(size) });
+    const params = new URLSearchParams();
+    params.set('page', String(filters.page ?? 1));
+    params.set('size', String(filters.size ?? 10));
+    
+    if (filters.category) params.set('category', filters.category);
+    if (filters.brand) params.set('brand', filters.brand);
+    if (filters.color) params.set('color', filters.color);
+    if (filters.minPrice !== undefined) params.set('minPrice', String(filters.minPrice));
+    if (filters.maxPrice !== undefined) params.set('maxPrice', String(filters.maxPrice));
+    if (filters.search) params.set('search', filters.search);
+    
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product?${params.toString()}`, { cache: "no-store" });
 
     if (!res.ok) {
@@ -150,4 +170,33 @@ export async function updateProduct(
     }
   );
   return res;
+}
+
+/**
+ * Fetch unique brands from all products for filter component.
+ * Returns an array of unique brand names sorted alphabetically.
+ */
+export async function getUniqueBrands(): Promise<string[]> {
+  try {
+    // Fetch a large page of products to get all brands
+    const response = await getAllProduct({ page: 1, size: 1000 });
+    
+    if (!response || !response.data) {
+      return [];
+    }
+
+    // Extract unique brands
+    const brandsSet = new Set<string>();
+    response.data.forEach((product) => {
+      if (product.brand && product.brand.trim()) {
+        brandsSet.add(product.brand.trim());
+      }
+    });
+
+    // Convert to array and sort alphabetically
+    return Array.from(brandsSet).sort();
+  } catch (error) {
+    console.error('getUniqueBrands error:', error);
+    return [];
+  }
 }

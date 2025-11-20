@@ -1,27 +1,17 @@
 "use client";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 interface PaginationProps {
   totalPages: number;
   currentPage: number;
-  pageName: string
+  pageName?: string; // Made optional since we're not using URL anymore
+  onPageChange?: (page: number) => void; // New callback prop
 }
 
-const Pagination = ({ pageName, totalPages, currentPage }: PaginationProps) => {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-
+const Pagination = ({ totalPages, currentPage, onPageChange }: PaginationProps) => {
   const handleChange = (page: number) => {
-    const params = new URLSearchParams(searchParams);
-
-    if (params.get(pageName)) {
-      params.delete(pageName);
-      params.set(pageName, page.toString());
-    } else {
-      params.set(pageName, page.toString());
+    if (onPageChange) {
+      onPageChange(page);
     }
-    router.replace(`${pathname}?${params}`);
   };
 
   const buttons = [];
