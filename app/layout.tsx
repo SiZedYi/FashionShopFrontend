@@ -3,6 +3,7 @@ import { Open_Sans as FontSans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/providers/ThemeProvider";
+import AuthProvider from "@/providers/AuthProvider";
 import ModalProvider from "@/providers/ModalProvider";
 
 
@@ -37,8 +38,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <ModalProvider />
+          <AuthProvider>
+            {children}
+            <ModalProvider />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

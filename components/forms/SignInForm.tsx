@@ -1,5 +1,5 @@
 'use client';
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -8,6 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { FaGoogle } from "react-icons/fa6";
+import Cookies from 'js-cookie';
+import { loginUser } from '@/service/auth';
+import { useAuthStore } from '@/store/authStore';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { showToast } from '@/lib/showToast';
 
 // Define Zod schema for form validation
 const signInSchema = z.object({
@@ -18,16 +23,36 @@ const signInSchema = z.object({
 type SignInFormData = z.infer<typeof signInSchema>;
 
 const SignInForm = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<SignInFormData>({
+  const { register, handleSubmit, formState: { errors } } = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
   });
 
-  const onSubmit = (data: SignInFormData) => {
-    console.log(data); // Handle form submission
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const setUser = useAuthStore(s => s.setUser);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect') || '/my-account';
+
+  const onSubmit = async (data: SignInFormData) => {
+    setError(null);
+    setLoading(true);
+    try {
+      const res = await loginUser({ email: data.email, password: data.password });
+      const token = res.token || res.accessToken;
+      if (token) {
+        Cookies.set('auth_token', token, { expires: 1 });
+      }
+      if (res.user) {
+        setUser(res.user);
+      }
+      showToast('Login Success', '/images/products/placeholder.png', `Welcome back ${res?.user?.fullName || ''}`);
+      router.replace(redirectUrl);
+    } catch (e: any) {
+      setError(e.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -87,11 +112,13 @@ const SignInForm = () => {
               </p>
             )}
           </div>
+          {error && <p className="text-red-600 text-sm">{error}</p>}
           <Button
             type="submit"
-            className="w-full bg-blue-500 dark:bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none"
+            disabled={loading}
+            className="w-full bg-blue-500 disabled:opacity-50 dark:bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none"
           >
-            Sign In
+            {loading ? 'Signing In...' : 'Sign In'}
           </Button>
         </form>
         <p className="text-center m-1">

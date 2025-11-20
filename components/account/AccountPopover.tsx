@@ -11,10 +11,25 @@ import { Separator } from "../ui/separator";
 import UserAvatar from "./UserAvatar";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/store/authStore";
+import Cookies from 'js-cookie';
+import { showToast } from "@/lib/showToast";
+import { useRouter } from "next/navigation";
 
 const AccountPopover = () => {
   const pathname = usePathname();
+  const user = useAuthStore(s => s.user);
+  const clearUser = useAuthStore(s => s.clearUser);
+  const router = useRouter();
 
+  const handleLogout = () => {
+    try {
+      Cookies.remove('auth_token');
+    } catch {}
+    clearUser();
+    showToast('Logged out', '/images/products/placeholder.png', 'You have been signed out');
+    router.replace('/');
+  };
   const userLinks = [
     {
       link: "/my-account",
@@ -53,7 +68,7 @@ const AccountPopover = () => {
       "
         >
           <ul className="space-y-1 text-center ">
-            <UserAvatar />
+            {user ? <UserAvatar {...user} /> : null}
             <Separator className="!my-2" />
             {userLinks.map((link) => (
               <Link
@@ -68,10 +83,22 @@ const AccountPopover = () => {
               </Link>
             ))}
             <Separator className="!my-2" />
-            <button className="flex items-start justify-start gap-2 p-2 bg-transparent hover:opacity-50">
-              <LogOut />
-              Logout
-            </button>
+            {user ? (
+              <button
+                onClick={handleLogout}
+                className="flex items-start justify-start gap-2 p-2 bg-transparent hover:opacity-50 w-full text-left"
+              >
+                <LogOut />
+                Logout
+              </button>
+            ) : (
+              <Link
+                href="/sign-in"
+                className="flex items-start justify-start gap-2 p-2 bg-transparent hover:opacity-50"
+              >
+                <User /> Sign In
+              </Link>
+            )}
           </ul>
         </PopoverContent>
       </Popover>
