@@ -1,29 +1,31 @@
+"use client";
 import FilterProducts from "@/components/products/FilterProducts";
 import ShopPageContainer from "@/components/products/ShopPageContainer";
-import React, { Suspense } from "react";
-import Loader from "@/components/others/Loader";
+import React, { useState } from "react";
 
-interface ShopPageOneProps {
-  searchParams: {
-    page: string;
-    category: string;
-    brand: string;
-    search: string;
-    min: string;
-    max: string;
-    color: string;
-  };
+export interface FilterState {
+  category: string;
+  brand: string;
+  color: string;
+  minPrice: number;
+  maxPrice: number;
 }
 
-const ShopPageOne = ({ searchParams }: ShopPageOneProps) => {
+const ShopPageOne = () => {
+  const [filters, setFilters] = useState<FilterState>({
+    category: "",
+    brand: "",
+    color: "",
+    minPrice: 10,
+    maxPrice: 5000,
+  });
+
   return (
     <section className="max-w-screen-xl flex gap-2 mx-auto p-2 md:p-8">
       <div className="hidden xl:block w-72">
-        <Suspense fallback={<Loader />}>
-          <FilterProducts />
-        </Suspense>
+        <FilterProducts onFiltersChange={setFilters} />
       </div>
-      <ShopPageContainer gridColumn={3} searchParams={searchParams} />
+      <ShopPageContainer gridColumn={3} filters={filters} />
     </section>
   );
 };
