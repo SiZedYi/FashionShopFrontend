@@ -11,3 +11,4 @@ export interface Slider {
   createdAt?: string;
   updatedAt?: string;
 }
+
