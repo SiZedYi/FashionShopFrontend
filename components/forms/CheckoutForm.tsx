@@ -1,11 +1,13 @@
 'use client'
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { useCheckoutStore } from "@/store/checkoutStore";
+import { toast } from "sonner";
 
 // Defined Zod schema for form validation
 const schema = z.object({
@@ -22,18 +24,35 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 const CheckoutForm: React.FC = () => {
+  const { shippingAddress, setShippingAddress, hydrate } = useCheckoutStore();
+
   // Initialize React Hook Form
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<FormData>({
     resolver: zodResolver(schema),
+    defaultValues: shippingAddress || undefined,
   });
+
+  // Hydrate shipping address on mount
+  useEffect(() => {
+    hydrate();
+  }, [hydrate]);
+
+  // Update form when shipping address changes
+  useEffect(() => {
+    if (shippingAddress) {
+      reset(shippingAddress);
+    }
+  }, [shippingAddress, reset]);
 
   // Handle form submission
   const onSubmit: SubmitHandler<FormData> = (data) => {
-    console.log(data);
+    setShippingAddress(data);
+    toast.success("Shipping address saved successfully!");
   };
 
   return (
