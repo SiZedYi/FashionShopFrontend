@@ -148,3 +148,8 @@ html, body {
     display: none;
   }
 }
+
+/* Hide Stripe Developer Assistant iframe */
+iframe#stripe-developer-assistant {
+  display: none !important;
+}

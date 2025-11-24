@@ -1,5 +1,6 @@
 "use client";
 import React from 'react';
+import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { getOrderById } from '@/service/order';
 import { Order } from '@/types/order';
@@ -110,19 +111,33 @@ const OrderDetailPage = () => {
             <div>
               <h3 className="font-medium mb-3">Items</h3>
               <div className="space-y-2">
-                {order.items.map(item => (
-                  <div key={item.id || item.productId} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 rounded border border-gray-200 dark:border-gray-700 text-sm">
-                    <div>
-                      <p className="font-medium text-gray-800 dark:text-white">{item.productName || 'Product #' + item.productId}</p>
-                      {item.productSku && <p className="text-xs text-gray-500 dark:text-gray-400">SKU: {item.productSku}</p>}
+                {order.items.map(item => {
+                  const unit = item.unitPrice ?? item.price ?? 0;
+                  const line = item.lineTotal ?? (item.quantity * unit);
+                  const imgSrc = `${process.env.NEXT_PUBLIC_IMAGE_URL}${item.productImage || '/images/products/placeholder.png'}`;
+                  return (
+                    <div key={item.id || item.productId} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 rounded border border-gray-200 dark:border-gray-700 text-sm">
+                      <div className="flex items-center gap-3 w-full sm:w-auto">
+                        {item.productImage ? (
+                          <Image src={imgSrc} alt={item.productName || 'Product'} width={64} height={64} className="h-16 w-16 rounded object-contain bg-white dark:bg-gray-800" />
+                        ) : (
+                          <div className="h-16 w-16 rounded flex items-center justify-center bg-gray-100 dark:bg-gray-800 text-gray-500 text-xs">
+                            IMG
+                          </div>
+                        )}
+                        <div>
+                          <p className="font-medium text-gray-800 dark:text-white">{item.productName || 'Product #' + item.productId}</p>
+                          {item.productSku && <p className="text-xs text-gray-500 dark:text-gray-400">SKU: {item.productSku}</p>}
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-4 text-gray-700 dark:text-gray-300">
+                        <span>Qty: {item.quantity}</span>
+                        <span>Unit: {formatPrice(unit)}</span>
+                        <span>Line: {formatPrice(line)}</span>
+                      </div>
                     </div>
-                    <div className="flex flex-wrap gap-4 text-gray-700 dark:text-gray-300">
-                      <span>Qty: {item.quantity}</span>
-                      <span>Unit: {formatPrice(item.unitPrice ?? item.price ?? 0)}</span>
-                      <span>Line: {formatPrice(item.lineTotal ?? (item.quantity * (item.unitPrice ?? item.price ?? 0)))}</span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
             <Separator className="my-6" />

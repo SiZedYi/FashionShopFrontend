@@ -159,6 +159,101 @@ export async function getMyOrders(): Promise<Order[]> {
 }
 
 /**
+ * Get paged orders for current user with sorting.
+ * Supports both array response and Spring-style Page object.
+ */
+export interface PagedOrdersResponse {
+  content: Order[];
+  totalElements?: number;
+  totalPages?: number;
+  page?: number; // 1-based page index for UI consumption
+  size?: number;
+  number?: number; // spring current page index (0-based, legacy)
+  last?: boolean; // indicates this is the last page
+}
+
+export async function getMyOrdersPaged(params: {
+  page?: number; // 1-based coming from UI
+  size?: number;
+  sortBy?: string;
+  sortDirection?: 'ASC' | 'DESC';
+}): Promise<PagedOrdersResponse> {
+  const token = Cookies.get('auth_token');
+  if (!token) {
+    throw new Error('Please login to view orders');
+  }
+  const { page = 1, size = 10, sortBy = 'createdAt', sortDirection = 'DESC' } = params;
+  const query = new URLSearchParams({
+    page: String(page),
+    size: String(size),
+    sortBy,
+    sortDirection,
+  }).toString();
+  try {
+    const response = await fetch(`${API_URL}/orders/my-orders?${query}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || errorData.error || 'Failed to get orders');
+    }
+    const data = await response.json();
+    // NEW shape support: { page, size, totalElements, totalPages, last, data: [...] }
+    if (data && Array.isArray(data.data)) {
+      const rawPage = typeof data.page === 'number' ? data.page : undefined;
+      // Detect zero-based if backend returns 0 while UI requested 1.
+      const zeroBased = rawPage === 0 && page === 1;
+      const uiPage = rawPage !== undefined ? (zeroBased ? rawPage + 1 : rawPage) : page;
+      return {
+        content: data.data,
+        totalElements: data.totalElements,
+        totalPages: data.totalPages,
+        page: uiPage,
+        size: data.size ?? size,
+        last: !!data.last,
+      };
+    }
+    // If backend returns a Spring Page object { content: [...], number, totalPages, ... }
+    if (data && Array.isArray(data.content)) {
+      const effectiveZeroIndex = data.page ?? data.number;
+      const zeroBased = typeof effectiveZeroIndex === 'number' && effectiveZeroIndex === 0 && page === 1;
+      const uiPage = typeof effectiveZeroIndex === 'number'
+        ? (zeroBased ? effectiveZeroIndex + 1 : effectiveZeroIndex)
+        : page;
+      return {
+        content: data.content,
+        totalElements: data.totalElements,
+        totalPages: data.totalPages,
+        page: uiPage,
+        size: data.size ?? size,
+        last: !!data.last,
+      };
+    }
+    // If backend returns plain array
+    if (Array.isArray(data)) {
+      return {
+        content: data,
+        page,
+        size,
+      };
+    }
+    // Unknown shape -> attempt to find orders field
+    if (Array.isArray(data.orders)) {
+      return {
+        content: data.orders,
+        page,
+        size,
+      };
+    }
+    throw new Error('Unexpected orders response shape');
+  } catch (error: any) {
+    throw new Error(error.message || 'Failed to get orders');
+  }
+}
+
+/**
  * Cancel an order
  */
 export async function cancelOrder(orderId: number): Promise<Order> {
