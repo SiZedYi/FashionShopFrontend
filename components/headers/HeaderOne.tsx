@@ -64,11 +64,11 @@ const HeaderOne = () => {
             </Suspense>
           </div>
           <div className="flex items-center gap-6 lg:gap-2 lg:-mt-1">
+            <Cart />
+            <AccountPopover />
             <div className="hidden lg:block">
               <ThemeToggle />
             </div>
-            <AccountPopover />
-            <Cart />
             <MobileHeader />
           </div>
         </div>

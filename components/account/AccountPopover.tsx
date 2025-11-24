@@ -23,13 +23,12 @@ const AccountPopover = () => {
   const router = useRouter();
 
   const handleLogout = () => {
-    try {
-      Cookies.remove('auth_token');
-    } catch {}
+    try { Cookies.remove('auth_token'); } catch {}
     clearUser();
     showToast('Logged out', '/images/products/placeholder.png', 'You have been signed out');
     router.replace('/');
   };
+
   const userLinks = [
     {
       link: "/my-account",
@@ -57,48 +56,69 @@ const AccountPopover = () => {
     },
   ];
 
-  return (
-    <div className="hidden lg:block">
-      <Popover>
-        <PopoverTrigger className="flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-800 duration-200 p-2 rounded-md">
-          <User size={25}  />
-        </PopoverTrigger>
-        <PopoverContent
-          className=" rounded-2xl 
-      "
+  // Not logged in: simple link with icon + Login text (no dropdown)
+  if (!user) {
+    return (
+      <div className="hidden lg:block">
+        <Link
+          href="/sign-in"
+          className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-800 duration-200"
+          aria-label="Login"
         >
-          <ul className="space-y-1 text-center ">
-            {user ? <UserAvatar {...user} /> : null}
+          <User size={22} />
+          <span className="text-sm font-medium">Login</span>
+        </Link>
+      </div>
+    );
+  }
+
+  // Logged in: popover with username (open on hover)
+  const [open, setOpen] = React.useState(false);
+  const closeTimeout = React.useRef<number | undefined>(undefined);
+
+  const handleMouseEnter = () => {
+    if (closeTimeout.current) {
+      window.clearTimeout(closeTimeout.current);
+      closeTimeout.current = undefined;
+    }
+    setOpen(true);
+  };
+  const handleMouseLeave = () => {
+    // small delay to allow moving pointer into popover content
+    closeTimeout.current = window.setTimeout(() => setOpen(false), 150);
+  };
+
+  return (
+    <div className="hidden lg:block" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-800 duration-200">
+          <User size={22} />
+          <span className="text-sm font-medium max-w-[160px] truncate" title={user.fullName}>{user.fullName}</span>
+        </PopoverTrigger>
+        <PopoverContent className="rounded-2xl" sideOffset={8} align="end">
+          <ul className="space-y-1 text-center" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+            <UserAvatar {...user} />
             <Separator className="!my-2" />
-            {userLinks.map((link) => (
+            {userLinks.map(link => (
               <Link
                 key={link.link}
                 href={link.link}
                 className={cn(
                   "flex items-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-800 p-2 rounded-md",
-                  link.isActive && "bg-gray-200  dark:bg-gray-800"
+                  link.isActive && "bg-gray-200 dark:bg-gray-800"
                 )}
               >
                 {link.icon} {link.label}
               </Link>
             ))}
             <Separator className="!my-2" />
-            {user ? (
-              <button
-                onClick={handleLogout}
-                className="flex items-start justify-start gap-2 p-2 bg-transparent hover:opacity-50 w-full text-left"
-              >
-                <LogOut />
-                Logout
-              </button>
-            ) : (
-              <Link
-                href="/sign-in"
-                className="flex items-start justify-start gap-2 p-2 bg-transparent hover:opacity-50"
-              >
-                <User /> Sign In
-              </Link>
-            )}
+            <button
+              onClick={handleLogout}
+              className="flex items-start justify-start gap-2 p-2 bg-transparent hover:opacity-50 w-full text-left"
+            >
+              <LogOut />
+              Logout
+            </button>
           </ul>
         </PopoverContent>
       </Popover>
