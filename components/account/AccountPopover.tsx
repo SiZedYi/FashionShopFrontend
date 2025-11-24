@@ -56,6 +56,21 @@ const AccountPopover = () => {
     },
   ];
 
+  // Always declare hooks at the top
+  const [open, setOpen] = React.useState(false);
+  const closeTimeout = React.useRef<number | undefined>(undefined);
+
+  const handleMouseEnter = () => {
+    if (closeTimeout.current) {
+      window.clearTimeout(closeTimeout.current);
+      closeTimeout.current = undefined;
+    }
+    setOpen(true);
+  };
+  const handleMouseLeave = () => {
+    closeTimeout.current = window.setTimeout(() => setOpen(false), 150);
+  };
+
   // Not logged in: simple link with icon + Login text (no dropdown)
   if (!user) {
     return (
@@ -73,21 +88,6 @@ const AccountPopover = () => {
   }
 
   // Logged in: popover with username (open on hover)
-  const [open, setOpen] = React.useState(false);
-  const closeTimeout = React.useRef<number | undefined>(undefined);
-
-  const handleMouseEnter = () => {
-    if (closeTimeout.current) {
-      window.clearTimeout(closeTimeout.current);
-      closeTimeout.current = undefined;
-    }
-    setOpen(true);
-  };
-  const handleMouseLeave = () => {
-    // small delay to allow moving pointer into popover content
-    closeTimeout.current = window.setTimeout(() => setOpen(false), 150);
-  };
-
   return (
     <div className="hidden lg:block" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <Popover open={open} onOpenChange={setOpen}>
