@@ -17,15 +17,22 @@ interface FilterProductsProps {
     minPrice: number;
     maxPrice: number;
   }) => void;
+  filters?: {
+    category: string;
+    brand: string;
+    color: string;
+    minPrice: number;
+    maxPrice: number;
+  };
 }
 
-const FilterProducts = ({ onFiltersChange }: FilterProductsProps) => {
+const FilterProducts = ({ onFiltersChange, filters }: FilterProductsProps) => {
   // State variables for filters
-  const [minValue, setMinValue] = useState(10);
-  const [maxValue, setMaxValue] = useState(5000);
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedColor, setSelectedColor] = useState("");
-  const [selectedBrand, setSelectedBrand] = useState("");
+  const [minValue, setMinValue] = useState(filters?.minPrice ?? 10);
+  const [maxValue, setMaxValue] = useState(filters?.maxPrice ?? 5000);
+  const [selectedCategory, setSelectedCategory] = useState(filters?.category ?? "");
+  const [selectedColor, setSelectedColor] = useState(filters?.color ?? "");
+  const [selectedBrand, setSelectedBrand] = useState(filters?.brand ?? "");
 
   // State for fetched data
   const [categories, setCategories] = useState<Category[]>([]);
@@ -52,6 +59,17 @@ const FilterProducts = ({ onFiltersChange }: FilterProductsProps) => {
 
     fetchFilters();
   }, []);
+
+  // Sync local state with filters prop (from query params)
+  useEffect(() => {
+    if (filters) {
+      setMinValue(filters.minPrice ?? 10);
+      setMaxValue(filters.maxPrice ?? 5000);
+      setSelectedCategory(filters.category ?? "");
+      setSelectedColor(filters.color ?? "");
+      setSelectedBrand(filters.brand ?? "");
+    }
+  }, [filters]);
 
   // Notify parent component whenever filters change
   useEffect(() => {

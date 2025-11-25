@@ -4,10 +4,9 @@ import React from 'react'
 
 const AddCategoryPage = () => {
   return (
-    <div className='p-2 w-full
-    '>
+    <div className='p-2 w-full'>
       <BreadcrumbComponent links={['/dashboard','/categories']} pageText='add category'/>
-      <CategoryForm />
+      <CategoryForm action="add" token={""} />
     </div>
   )
 }
