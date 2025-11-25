@@ -18,6 +18,7 @@ export interface ProductFilters {
   minPrice?: number;
   maxPrice?: number;
   search?: string;
+  keyword?:string;
 }
 
 /**
@@ -38,6 +39,7 @@ export async function getAllProduct(
     if (filters.minPrice !== undefined) params.set('minPrice', String(filters.minPrice));
     if (filters.maxPrice !== undefined) params.set('maxPrice', String(filters.maxPrice));
     if (filters.search) params.set('search', filters.search);
+    if(filters.keyword) params.set('keyword',filters.keyword);
     
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product?${params.toString()}`, { cache: "no-store" });
 

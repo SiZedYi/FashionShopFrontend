@@ -1,3 +1,4 @@
+'use client'
 import ProductActions from "@/components/dashboard/product/ProductActions";
 import ProductHeader from "@/components/dashboard/product/ProductHeader";
 import Loader from "@/components/others/Loader";
@@ -15,11 +16,13 @@ type PageProps = {
 const ProductsPage = async ({ searchParams }: PageProps) => {
   const pageParam = typeof searchParams?.page === "string" ? searchParams?.page : Array.isArray(searchParams?.page) ? searchParams?.page?.[0] : undefined;
   const sizeParam = typeof searchParams?.size === "string" ? searchParams?.size : Array.isArray(searchParams?.size) ? searchParams?.size?.[0] : undefined;
+  const keywordParam = typeof searchParams?.keyword === "string" ? searchParams?.keyword : Array.isArray(searchParams?.keyword) ? searchParams?.keyword?.[0] : undefined;
 
   const page = Number(pageParam) > 0 ? Number(pageParam) : 1;
   const size = Number(sizeParam) > 0 ? Number(sizeParam) : 8;
+  const keyword = keywordParam || "";
 
-  const products = await getAllProduct({ page, size });
+  const products = await getAllProduct({ page, size, keyword });
   const productsData = products?.data || [];
   const totalPages = products?.totalPages || 1;
   const currentPage = products?.page || page;
