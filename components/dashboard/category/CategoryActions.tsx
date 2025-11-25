@@ -1,17 +1,18 @@
 "use client";
 import React, { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 const CategoryActions = ({ categoryId, categoryName }: { categoryId: number; categoryName: string }) => {
   const encodedName = encodeURIComponent(categoryName);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
 
   const handleDelete = async () => {
     setLoading(true);
-    setError(null);
     try {
       // Get token from cookie
       const getCookie = (name: string) => {
@@ -29,13 +30,13 @@ const CategoryActions = ({ categoryId, categoryName }: { categoryId: number; cat
       });
       if (!res.ok) {
         const data = await res.json();
-        console.log(data);
-        
         throw new Error(data.error || "Delete failed");
       }
+      setOpen(false);
       window.location.reload();
     } catch (err: any) {
-      setError(err.message || "Delete failed");
+      setOpen(false);
+      toast.error(err.message || "Delete failed");
     } finally {
       setLoading(false);
     }
@@ -64,14 +65,39 @@ const CategoryActions = ({ categoryId, categoryName }: { categoryId: number; cat
           </Link>
           <button
             className="w-full text-start hover:bg-slate-100 dark:hover:bg-slate-900 py-2 px-4 rounded-md text-red-600"
-            onClick={handleDelete}
+            onClick={() => setOpen(true)}
             disabled={loading}
           >
             {loading ? "Deleting..." : "Delete Category"}
           </button>
-          {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
         </PopoverContent>
       </Popover>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Category</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this category? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <button
+              className="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded mr-2"
+              onClick={() => setOpen(false)}
+              disabled={loading}
+            >
+              Cancel
+            </button>
+            <button
+              className="bg-red-600 text-white px-4 py-2 rounded"
+              onClick={handleDelete}
+              disabled={loading}
+            >
+              {loading ? "Deleting..." : "Delete"}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
