@@ -1,69 +1,86 @@
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { dummyCategories } from "@/data/category/categoryData";
-import { MoreHorizontal } from "lucide-react";
+import type { Category } from "@/service/category";
+import CategoryActions from "@/components/dashboard/category/CategoryActions";
+import Loader from "@/components/others/Loader";
+import Pagination from "@/components/others/Pagination";
+import PageSizeSelector from "@/components/others/PageSizeSelector";
+import { getAllCategoriesAdmin } from "@/service/category";
 import Image from "next/image";
-import Link from "next/link";
-import React from "react";
+import React, { Suspense } from "react";
 
-const CategoryPage = () => {
+type PageProps = {
+  searchParams?: Record<string, string | string[] | undefined>;
+};
 
+import { cookies } from "next/headers";
+
+const CategoryPage = async ({ searchParams }: PageProps) => {
+  const pageParam = typeof searchParams?.page === "string" ? searchParams?.page : Array.isArray(searchParams?.page) ? searchParams?.page?.[0] : undefined;
+  const sizeParam = typeof searchParams?.size === "string" ? searchParams?.size : Array.isArray(searchParams?.size) ? searchParams?.size?.[0] : undefined;
+
+  const page = Number(pageParam) > 0 ? Number(pageParam) : 1;
+  const size = Number(sizeParam) > 0 ? Number(sizeParam) : 8;
+
+  // Lấy token admin từ cookies
+  const cookieStore = cookies();
+  const token = cookieStore.get("admin_token")?.value;
+
+  const categories = await getAllCategoriesAdmin({ page, size, token });
+  const categoriesData = categories?.data || [];
+  const totalPages = categories?.totalPages || 1;
+  const currentPage = categories?.page || page;
 
   return (
-    <div className="bg-white dark:bg-gray-800 min-h-screen max-w-screen-xl w-full mx-auto px-4 py-12 m-2 rounded-md">
-      <div >
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-            Browse Categories
-          </h1>
-          <Link
-            href={"/dashboard/categories/add-category"}
-            className="py-2 px-6 rounded-md bg-blue-500 hover:opacity-60 text-white"
-          >
-            Add Category
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {dummyCategories.map((category) => (
-            <div
-              key={category.id}
-              className="bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden shadow-md"
-            >
-              <div className="relative w-full h-[16rem] p-2">
-                <Image
-                  src={category.image}
-                  fill
-                  alt={category.name}
-                  className="w-full h-64 object-cover"
-                />
-              </div>
-              <div className="p-6">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                  {category.name}
-                </h2>
-                <p className="text-gray-700 dark:text-gray-300">
-                  {category.description}
-                </p>
-                <div className="mt-4 flex space-x-4">
-                  
-                  {/* Horizontal icons */}
-                  <Popover>
-                    <PopoverTrigger className="">
-                      <div className="flex items-center justify-center hover:bg-slate-100 p-2 rounded-full dark:hover:bg-slate-900 duration-200">
-                        <MoreHorizontal />
-                      </div>
-                    </PopoverTrigger>
-                    <PopoverContent className="text-start">
-                      <button className="w-full text-start hover:bg-slate-100 dark:hover:bg-slate-900 py-2 px-4 rounded-md">
-                        Delete Category
-                      </button>
-                    </PopoverContent>
-                  </Popover>
-                  {/* Add more icons as needed */}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+    <div className="w-5/6 mx-auto w-full bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 my-4">
+      <div className="flex items-center justify-between gap-4 mb-4">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white">Browse Categories</h1>
+        <PageSizeSelector />
+      </div>
+      <div className="overflow-x-auto">
+        <table className="min-w-full overflow-x-scroll divide-y divide-gray-200 dark:divide-gray-700 border dark:border-gray-500">
+          <thead className="bg-gray-50 dark:bg-gray-700">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-l border-gray-200 dark:border-gray-700 first:border-l-0">Name</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-l border-gray-200 dark:border-gray-700 first:border-l-0">Description</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-l border-gray-200 dark:border-gray-700 first:border-l-0">Slug</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-l border-gray-200 dark:border-gray-700 first:border-l-0">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-l border-gray-200 dark:border-gray-700 first:border-l-0">Created At</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-l border-gray-200 dark:border-gray-700 first:border-l-0">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+            {(categoriesData as Category[]).map((category: Category) => (
+              <tr key={category.id} className="odd:bg-white even:bg-gray-50 dark:odd:bg-gray-800 dark:even:bg-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap first:border-l-0 border-l border-gray-200 dark:border-gray-700">
+                  {category.images ? (
+                    <Image
+                      src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${category.images}`}
+                      alt={category.name}
+                      width={40}
+                      height={40}
+                      className="h-10 w-10 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-600" />
+                  )}
+                </td>
+                <td className="px-6 py-4 whitespace-normal break-words first:border-l-0 border-l border-gray-200 dark:border-gray-700">{category.name}</td>
+                <td className="px-6 py-4 whitespace-normal break-words first:border-l-0 border-l border-gray-200 dark:border-gray-700">
+                  <div className="max-w-xs truncate" title={category.description}>{category.description}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap first:border-l-0 border-l border-gray-200 dark:border-gray-700">{category.slug}</td>
+                <td className="px-6 py-4 whitespace-nowrap first:border-l-0 border-l border-gray-200 dark:border-gray-700">{category.isActive ? "Active" : "Inactive"}</td>
+                <td className="px-6 py-4 whitespace-nowrap first:border-l-0 border-l border-gray-200 dark:border-gray-700">{category.createdAt ? new Date(category.createdAt).toLocaleDateString() : "-"}</td>
+                <td className="px-6 py-4 whitespace-nowrap first:border-l-0 border-l border-gray-200 dark:border-gray-700">
+                  <CategoryActions categoryId={category.id} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <Suspense fallback={<Loader />}>
+          <Pagination totalPages={totalPages} currentPage={currentPage} pageName="page" />
+        </Suspense>
       </div>
     </div>
   );
