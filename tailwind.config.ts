@@ -1,13 +1,13 @@
-import type { Config } from "tailwindcss"
+import type { Config } from "tailwindcss";
 
 const config = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-	],
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   prefix: "",
   theme: {
     container: {
@@ -19,7 +19,21 @@ const config = {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-sans)", "Open Sans", "ui-sans-serif", "system-ui", "-apple-system", "Segoe UI", "Roboto", "Noto Sans", "Ubuntu", "Cantarell", "Helvetica Neue", "Arial", "sans-serif"],
+        sans: [
+          "var(--font-sans)",
+          "Open Sans",
+          "ui-sans-serif",
+          "system-ui",
+          "-apple-system",
+          "Segoe UI",
+          "Roboto",
+          "Noto Sans",
+          "Ubuntu",
+          "Cantarell",
+          "Helvetica Neue",
+          "Arial",
+          "sans-serif",
+        ],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -78,6 +92,32 @@ const config = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-} satisfies Config
+  safelist: [
+    "bg-red-600",
+    "bg-orange-600",
+    "bg-amber-600",
+    "bg-yellow-500",
+    "bg-lime-600",
+    "bg-green-600",
+    "bg-emerald-600",
+    "bg-teal-600",
+    "bg-cyan-600",
+    "bg-sky-600",
+    "bg-blue-600",
+    "bg-indigo-600",
+    "bg-violet-600",
+    "bg-purple-600",
+    "bg-pink-600",
+    "bg-rose-600",
+    "bg-amber-800",
+    "bg-gray-600",
+    "bg-slate-600",
+    "bg-stone-600",
+    "bg-black",
+    "bg-white",
+    "text-black",
+    "border-gray-300",
+  ],
+} satisfies Config;
 
-export default config
+export default config;

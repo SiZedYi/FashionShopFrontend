@@ -212,7 +212,7 @@ const ProductForm = ({ action, productId, product }: ProductFormProps) => {
   );
 
   const getColorClass = (name: string) =>
-    COLOR_OPTIONS.find((o) => o.name === name)?.className || "bg-slate-600";
+    COLOR_OPTIONS.find((o) => o.name === name)?.className;
 
   const addCategory = (val: string) => {
     if (!val) return;
@@ -537,23 +537,54 @@ const ProductForm = ({ action, productId, product }: ProductFormProps) => {
             )}
             {selectedColors.length > 0 && (
               <div className="mt-3 grid grid-cols-1 gap-4">
-                {selectedColors.map((color) => (
-                  <div key={color} className="border rounded-md p-3 dark:border-gray-700">
-                    <p className="text-sm font-medium mb-1 capitalize">{color} Images</p>
-                    <Input
-                      id={`images-${color}`}
-                      type="file"
-                      multiple
-                      onChange={(e) => handleImagesChange(color, e.target.files)}
-                      className="mt-1 p-2 block w-full rounded-md border-gray-300 dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                    {imagesRecord?.[color]?.length ? (
-                      <p className="text-xs mt-1 text-green-600">{imagesRecord[color].length} file(s) selected</p>
-                    ) : (
-                      <p className="text-xs mt-1 text-gray-400">No files selected</p>
-                    )}
-                  </div>
-                ))}
+                {selectedColors.map((color, colorIndex) => {
+                  // Get current images for this color from product data
+                  const currentImages = action === "update" && product?.images && Array.isArray(product.images)
+                    ? product.images.filter((_: string, idx: number) => {
+                        // Map images to colors by index (assuming images are ordered by color)
+                        const imagesPerColor = Math.ceil(product.images.length / selectedColors.length);
+                        return idx >= colorIndex * imagesPerColor && idx < (colorIndex + 1) * imagesPerColor;
+                      })
+                    : [];
+
+                  return (
+                    <div key={color} className="border rounded-md p-3 dark:border-gray-700">
+                      <p className="text-sm font-medium mb-1 capitalize">{color} Images</p>
+                      
+                      {/* Show current images if in update mode */}
+                      {action === "update" && currentImages.length > 0 && (
+                        <div className="mb-3">
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Current Images:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {currentImages.map((img: string, idx: number) => (
+                              <div key={idx} className="relative">
+                                <img
+                                  src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${img}`}
+                                  alt={`${color} ${idx + 1}`}
+                                  className="h-20 w-20 object-cover rounded border dark:border-gray-600"
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <Input
+                        id={`images-${color}`}
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={(e) => handleImagesChange(color, e.target.files)}
+                        className="mt-1 p-2 block w-full rounded-md border-gray-300 dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                      {imagesRecord?.[color]?.length ? (
+                        <p className="text-xs mt-1 text-green-600">{imagesRecord[color].length} file(s) selected</p>
+                      ) : (
+                        <p className="text-xs mt-1 text-gray-400">No files selected</p>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             )}
             {errors.images && <span className="text-red-500">{(errors.images as any).message}</span>}

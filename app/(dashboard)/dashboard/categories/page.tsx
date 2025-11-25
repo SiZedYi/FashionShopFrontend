@@ -2,9 +2,10 @@ import type { Category } from "@/service/category";
 import CategoryActions from "@/components/dashboard/category/CategoryActions";
 import Loader from "@/components/others/Loader";
 import Pagination from "@/components/others/Pagination";
-import PageSizeSelector from "@/components/others/PageSizeSelector";
+import { Button } from "@/components/ui/button";
 import { getAllCategoriesAdmin } from "@/service/category";
 import Image from "next/image";
+import Link from "next/link";
 import React, { Suspense } from "react";
 
 type PageProps = {
@@ -33,7 +34,9 @@ const CategoryPage = async ({ searchParams }: PageProps) => {
     <div className="w-5/6 mx-auto w-full bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 my-4">
       <div className="flex items-center justify-between gap-4 mb-4">
         <h1 className="text-xl font-bold text-gray-900 dark:text-white">Browse Categories</h1>
-        <PageSizeSelector />
+        <Link href="/dashboard/categories/add">
+          <Button>Add Category</Button>
+        </Link>
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-full overflow-x-scroll divide-y divide-gray-200 dark:divide-gray-700 border dark:border-gray-500">
@@ -42,7 +45,6 @@ const CategoryPage = async ({ searchParams }: PageProps) => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-l border-gray-200 dark:border-gray-700 first:border-l-0">Name</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-l border-gray-200 dark:border-gray-700 first:border-l-0">Description</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-l border-gray-200 dark:border-gray-700 first:border-l-0">Slug</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-l border-gray-200 dark:border-gray-700 first:border-l-0">Status</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-l border-gray-200 dark:border-gray-700 first:border-l-0">Created At</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-l border-gray-200 dark:border-gray-700 first:border-l-0">Actions</th>
@@ -68,11 +70,10 @@ const CategoryPage = async ({ searchParams }: PageProps) => {
                 <td className="px-6 py-4 whitespace-normal break-words first:border-l-0 border-l border-gray-200 dark:border-gray-700">
                   <div className="max-w-xs truncate" title={category.description}>{category.description}</div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap first:border-l-0 border-l border-gray-200 dark:border-gray-700">{category.slug}</td>
                 <td className="px-6 py-4 whitespace-nowrap first:border-l-0 border-l border-gray-200 dark:border-gray-700">{category.isActive ? "Active" : "Inactive"}</td>
                 <td className="px-6 py-4 whitespace-nowrap first:border-l-0 border-l border-gray-200 dark:border-gray-700">{category.createdAt ? new Date(category.createdAt).toLocaleDateString() : "-"}</td>
                 <td className="px-6 py-4 whitespace-nowrap first:border-l-0 border-l border-gray-200 dark:border-gray-700">
-                  <CategoryActions categoryId={category.id} />
+                  <CategoryActions categoryId={category.id} categoryName={category.name} />
                 </td>
               </tr>
             ))}
