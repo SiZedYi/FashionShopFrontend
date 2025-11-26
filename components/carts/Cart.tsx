@@ -22,30 +22,40 @@ import { formatPrice } from "@/lib/formatPrice";
 import { CartItem } from "@/types/cart";
 
 const Cart = () => {
-  const { cartItems, getTotalItems, removeFromCart, getTotalPrice, updateQuantity } =
-    useCartStore();
+  const {
+    cartItems,
+    getTotalItems,
+    removeFromCart,
+    getTotalPrice,
+    updateQuantity,
+  } = useCartStore();
   const [showSheet, setShowSheet] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
-
   const handleRovomeItemFromCart = (item: CartItem) => {
     removeFromCart(item.id, item.selectedColor);
-    showToast("Item Removed from Cart", (item?.images && item.images[0]) || "", item.name);
+    showToast(
+      "Item Removed from Cart",
+      (item?.images && item.images[0]) || "",
+      item.name
+    );
   };
-
 
   const handleIncrement = (item: CartItem) => {
     const newQty = item.quantity + 1;
     updateQuantity(item.id, newQty, item.selectedColor);
   };
 
-
   const handleDecrement = (item: CartItem) => {
     const newQty = item.quantity - 1;
     if (newQty <= 0) {
       // remove item when quantity goes to 0
       removeFromCart(item.id, item.selectedColor);
-      showToast("Item Removed from Cart", (item?.images && item.images[0]) || "", item.name);
+      showToast(
+        "Item Removed from Cart",
+        (item?.images && item.images[0]) || "",
+        item.name
+      );
     } else {
       updateQuantity(item.id, newQty, item.selectedColor);
     }
@@ -91,18 +101,35 @@ const Cart = () => {
                        border-b-2 border-t-gray-500"
                   >
                     {(() => {
-                      let imgSrc = '';
-                      if (item.selectedColor && item.images && item.images.length > 0) {
-                        // Try to find the index of the selected color
+                      let imgSrc = "";
+                      if (
+                        item.selectedColor &&
+                        item.images &&
+                        item.images.length > 0
+                      ) {
                         const productColors = item.color || [];
                         let colorIdx = -1;
                         if (Array.isArray(productColors)) {
-                          colorIdx = productColors.findIndex(c => c === item.selectedColor);
+                          colorIdx = productColors.findIndex(
+                            (c) => c === item.selectedColor
+                          );
                         }
                         // fallback: if colorIdx not found, use first image
-                        imgSrc = `${process.env.NEXT_PUBLIC_IMAGE_URL}${item.images[colorIdx >= 0 ? colorIdx : 0]}`;
+                        const imageValue =
+                          item.images[colorIdx >= 0 ? colorIdx : 0];
+                        imgSrc = imageValue
+                          ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${imageValue}`
+                          : "";
                       } else if (item.images && item.images.length > 0) {
-                        imgSrc = `${process.env.NEXT_PUBLIC_IMAGE_URL}${item.images[0]}`;
+                        imgSrc = item.images[0]
+                          ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${item.images[0]}`
+                          : "";
+                      }
+                      // Nếu không có ảnh, render placeholder
+                      if (!imgSrc) {
+                        return (
+                          <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-600" />
+                        );
                       }
                       return (
                         <Image
@@ -118,13 +145,18 @@ const Cart = () => {
                     {item.selectedColor && (
                       <span
                         className="inline-block w-5 h-5 rounded-full border ml-2 align-middle"
-                        style={{ backgroundColor: item.selectedColor, borderColor: '#ccc' }}
+                        style={{
+                          backgroundColor: item.selectedColor,
+                          borderColor: "#ccc",
+                        }}
                         title={item.selectedColor}
                       />
                     )}
                     <div className="space-y-2">
                       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
-                        <h2 className="text-lg font-bold">{item.name.slice(0, 100)}</h2>
+                        <h2 className="text-lg font-bold">
+                          {item.name.slice(0, 100)}
+                        </h2>
                       </div>
 
                       <div className="flex items-center justify-between">

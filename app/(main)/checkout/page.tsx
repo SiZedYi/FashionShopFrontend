@@ -3,7 +3,7 @@ import React from 'react'
 
 const CheckoutPage = () => {
   return (
-    <div>
+    <div className='max-w-screen'>
         <CheckoutPageOne />
     </div>
   )

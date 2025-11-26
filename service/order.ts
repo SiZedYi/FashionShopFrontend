@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { CreateOrderPayload, Order, PaymentResult, StripePaymentIntent } from '@/types/order';
+import { CreateOrderPayload, Order, PaymentResult, StripePaymentIntent, PagedOrders, UpdateOrderPayload } from '@/types/order';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 console.log('api', API_URL);
@@ -280,5 +280,134 @@ export async function cancelOrder(orderId: number): Promise<Order> {
     return data;
   } catch (error: any) {
     throw new Error(error.message || 'Failed to cancel order');
+  }
+}
+
+/**
+ * Get all orders for admin dashboard with pagination and sorting
+ */
+export async function getAllOrdersAdmin(params: {
+  page?: number;
+  size?: number;
+  sortBy?: string;
+  sortDirection?: 'ASC' | 'DESC';
+  token?: string;
+}): Promise<PagedOrders | null> {
+  const { page = 1, size = 10, sortBy = 'createdAt', sortDirection = 'DESC', token } = params;
+  
+  // Try to get token from params or cookies (admin_token for admin routes)
+  const authToken = token || Cookies.get('admin_token') || Cookies.get('auth_token');
+  
+  if (!authToken) {
+    console.error('No authentication token available');
+    return null;
+  }
+
+  try {
+    const query = new URLSearchParams({
+      page: String(page),
+      size: String(size),
+      sortBy,
+      sortDirection,
+    }).toString();
+
+    const response = await fetch(`${API_URL}/admin/orders?${query}`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Content-Type': 'application/json'
+      },
+      cache: 'no-store' // Ensure fresh data on each request
+    });
+
+    if (!response.ok) {
+      console.error('getAllOrdersAdmin failed', response.status, response.statusText);
+      return null;
+    }
+
+    const data = await response.json();
+    
+    if (!data || !Array.isArray(data.data)) {
+      console.error('getAllOrdersAdmin invalid shape:', data);
+      return null;
+    }
+
+    return data as PagedOrders;
+  } catch (error: any) {
+    console.error('getAllOrdersAdmin error:', error);
+    return null;
+  }
+}
+
+/**
+ * Get order detail by ID for admin
+ */
+export async function getOrderByIdAdmin(orderId: number, token?: string): Promise<Order | null> {
+  // Try to get token from params or cookies (admin_token for admin routes)
+  const authToken = token || Cookies.get('admin_token') || Cookies.get('auth_token');
+  
+  if (!authToken) {
+    console.error('No authentication token available');
+    return null;
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/admin/orders/${orderId}`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Content-Type': 'application/json'
+      },
+      cache: 'no-store' // Ensure fresh data on each request
+    });
+
+    if (!response.ok) {
+      console.error('getOrderByIdAdmin failed', response.status, response.statusText);
+      return null;
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+    console.error('getOrderByIdAdmin error:', error);
+    return null;
+  }
+}
+
+/**
+ * Update order for admin
+ */
+export async function updateOrderAdmin(
+  orderId: number,
+  payload: UpdateOrderPayload,
+  token?: string
+): Promise<Order | null> {
+  // Try to get token from params or cookies (admin_token for admin routes)
+  const authToken = token || Cookies.get('admin_token') || Cookies.get('auth_token');
+  
+  if (!authToken) {
+    console.error('No authentication token available');
+    throw new Error('Please login to update order');
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/admin/orders/${orderId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('updateOrderAdmin failed', response.status, response.statusText);
+      throw new Error(errorData.message || errorData.error || 'Failed to update order');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+    console.error('updateOrderAdmin error:', error);
+    throw error;
   }
 }

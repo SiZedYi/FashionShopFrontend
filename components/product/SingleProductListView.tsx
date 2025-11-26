@@ -5,14 +5,14 @@ import Link from "next/link";
 import Image from "next/image";
 import AddToWishlistBtn from "../buttons/AddToWishlistBtn";
 import AddToCartBtn from "../buttons/AddToCartBtn";
-import { Product } from "@/types";
+import { Product } from "@/types/product";
 import { calculateDiscount } from "@/lib/calculateDiscount";
 
 const SingleProductListView = ({ product }: { product: Product }) => {
   const { category, discount, id, images, name, price, rating, reviews } =
     product;
 
-  const discountPrice = calculateDiscount(price, discount);
+  const discountPrice = calculateDiscount(price, discount || 0);
 
   return (
     <Link
@@ -30,8 +30,8 @@ const SingleProductListView = ({ product }: { product: Product }) => {
             {name.length > 45 && "..."}
           </h3>
         </div>
-        <RatingReview rating={rating} />
-        <div className="text-lg font-bold space-x-2 my-4 ">
+        <RatingReview rating={rating || 0} />
+        <div className="text-lg font-bold space-x-2 my-4 ">`
           <span className="line-through text-muted-foreground">${price}</span>
           <span className="text-xl font-bold text-green-500">
             ${discountPrice}
@@ -49,7 +49,7 @@ const SingleProductListView = ({ product }: { product: Product }) => {
         >
           <AddToWishlistBtn product={product} />
           <AddToCartBtn
-            product={{ ...product, quantity: 1, selectedColor: "" }}
+            product={{ ...product, quantity: 1, selectedColor: product.color && product.color.length > 0 ? product.color[0] : "" }}
           />
         </div>
       </div>

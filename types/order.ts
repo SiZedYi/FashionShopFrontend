@@ -70,3 +70,28 @@ export interface PaymentResult {
   message?: string;
   error?: string;
 }
+
+export interface PagedOrders {
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  last: boolean;
+  data: Order[];
+}
+
+export interface UpdateOrderPayload {
+  shippingAddress: {
+    firstName: string;
+    lastName: string;
+    address: string;
+    phone: string;
+    city: string;
+    zip: string;
+    country: string;
+  };
+  items: Array<{
+    itemId: number;
+    quantity: number;
+  }>;
+}
