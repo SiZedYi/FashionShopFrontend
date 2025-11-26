@@ -1,4 +1,3 @@
-'use client'
 import ProductActions from "@/components/dashboard/product/ProductActions";
 import ProductHeader from "@/components/dashboard/product/ProductHeader";
 import Loader from "@/components/others/Loader";

@@ -13,7 +13,7 @@ const CheckoutPageOne = () => {
 
   return (
     <section className="px-4 py-4 lg:px-16  bg-white dark:bg-gray-800">
-      <div className="max-w-screen-xl mx-auto">
+      <div className="max-w-screen mx-auto">
         <div className="mb-4">
           <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white ">
             Checkout

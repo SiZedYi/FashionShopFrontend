@@ -10,7 +10,7 @@ import {
 import useCartStore from "@/store/cartStore";
 import useWishlistStore from "@/store/wishlistStore";
 import { showToast } from "@/lib/showToast";
-import { Product } from "@/types";
+import { Product } from "@/types/product";
 import { useProductQuickViewStore } from "@/store/productQuickViewStore";
 import Loader from "../others/Loader";
 
@@ -31,16 +31,21 @@ const ProductOptions = ({ product }: { product: Product }) => {
   }
 
   const handleAddToCart = () => {
-    addToCart({ ...product, quantity: 1, selectedColor: "" });
-    showToast("Item Added To Cart", images[0], name);
+    // Use the first color from the product's color array as default
+    const defaultColor = product.color && product.color.length > 0 ? product.color[0] : "";
+    addToCart({ ...product, quantity: 1, selectedColor: defaultColor });
+    // Ensure image path is valid before showing toast
+    const imagePath = images && images[0] ? images[0] : "";
+    showToast("Item Added To Cart", imagePath, name);
   };
 
   const handleAddToWishList = () => {
+    const imagePath = images && images[0] ? images[0] : "";
     if (isInWishlist(product.id)) {
-      showToast("Item Added To Wishlist", images[0], name);
+      showToast("Item Added To Wishlist", imagePath, name);
     } else {
       addToWishlist(product);
-      showToast("Item Already Exist In Wishlist", images[0], name);
+      showToast("Item Already Exist In Wishlist", imagePath, name);
     }
   };
 

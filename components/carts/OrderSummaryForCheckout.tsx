@@ -54,14 +54,17 @@ const OrderSummaryForCheckout = () => {
 
     return {
       shippingAddress,
-      items: cartItems.map(item => ({
-        productId: item.productId || item.id,
-        quantity: item.quantity,
-        price: item.price,
-        color: item.selectedColor,
-        productName: item.name,
-        productImage: item.images?.[0],
-      })),
+      items: cartItems.map(item => {
+        // Ensure color is sent correctly - use selectedColor if available, otherwise use first color from array
+        const color = item.selectedColor || (item.color && item.color.length > 0 ? item.color[0] : "");
+        
+        return {
+          productId: item.productId || item.id,
+          quantity: item.quantity,
+          price: item.price,
+          color: color, // Make sure color is always a string, not undefined
+        };
+      }),
       totalAmount: getTotalAmount(),
       subtotal: getTotalPrice(),
       tax: getTax(),
