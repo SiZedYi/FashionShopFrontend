@@ -70,3 +70,12 @@ export interface PaymentResult {
   message?: string;
   error?: string;
 }
+
+export interface PagedOrders {
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  last: boolean;
+  data: Order[];
+}
