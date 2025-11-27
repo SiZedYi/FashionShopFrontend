@@ -4,6 +4,8 @@ import React from 'react';
 import { getUserProfile } from '@/service/customer';
 import { Button } from '@/components/ui/button';
 import { cookies } from 'next/headers';
+import ProfileForm from '@/components/account/ProfileForm';
+import AccountPasswordSection from '@/components/account/AccountPasswordSection';
 
 const MyAccountPage = async () => {
   let profileData = null;
@@ -40,38 +42,9 @@ const MyAccountPage = async () => {
         <h1 className="text-3xl lg:text-4xl font-bold text-gray-800 dark:text-white mb-8">
           My Account
         </h1>
-        <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Personal Information</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
-              <p className="text-gray-800 dark:text-white">{profileData.fullName}</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
-              <p className="text-gray-800 dark:text-white">{profileData.email}</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone Number</label>
-              <p className="text-gray-800 dark:text-white">{profileData.phone}</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Account Status</label>
-              <p className="text-gray-800 dark:text-white">
-                {profileData.isActive ? (
-                  <span className="text-green-600 dark:text-green-400">Active</span>
-                ) : (
-                  <span className="text-red-600 dark:text-red-400">Inactive</span>
-                )}
-              </p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Member Since</label>
-              <p className="text-gray-800 dark:text-white">
-                {new Date(profileData.createdAt).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
+        <ProfileForm initialData={profileData} />
+        <div className="mt-8">
+          <AccountPasswordSection />
         </div>
         <div className="mt-8 bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
           <div className='flex items-center justify-between mb-4'>
