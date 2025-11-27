@@ -79,3 +79,19 @@ export interface PagedOrders {
   last: boolean;
   data: Order[];
 }
+
+export interface UpdateOrderPayload {
+  shippingAddress: {
+    firstName: string;
+    lastName: string;
+    address: string;
+    phone: string;
+    city: string;
+    zip: string;
+    country: string;
+  };
+  items: Array<{
+    itemId: number;
+    quantity: number;
+  }>;
+}
