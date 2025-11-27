@@ -175,6 +175,81 @@ export async function getUserProfile(token?: string): Promise<UserProfile> {
 }
 
 /**
+ * Update user profile
+ */
+export async function updateUserProfile(payload: {
+  fullName: string;
+  phone: string;
+  password?: string;
+  isActive: boolean;
+}): Promise<UserProfile> {
+  const authToken = Cookies.get('auth_token');
+  
+  if (!authToken) {
+    throw new Error('Please login to update profile');
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/customer/profile`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || errorData.error || 'Failed to update profile');
+    }
+
+    const data = await response.json();
+    return data as UserProfile;
+  } catch (error: any) {
+    console.error('updateUserProfile error:', error);
+    throw error;
+  }
+}
+
+/**
+ * Change user password
+ */
+export async function changePassword(payload: {
+  currentPassword: string;
+  newPassword: string;
+}): Promise<void> {
+  const authToken = Cookies.get('auth_token');
+  
+  if (!authToken) {
+    throw new Error('Please login to change password');
+  }
+
+  try {
+    // Assuming the API expects the password in the profile update
+    const response = await fetch(`${API_URL}/customer/profile`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        password: payload.newPassword,
+        isActive: true
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || errorData.error || 'Failed to change password');
+    }
+  } catch (error: any) {
+    console.error('changePassword error:', error);
+    throw error;
+  }
+}
+
+/**
  * Get all addresses for current user
  */
 export async function getAddresses(token?: string): Promise<Address[]> {
