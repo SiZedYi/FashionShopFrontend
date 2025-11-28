@@ -57,11 +57,23 @@ const OrderSummaryForCheckout = () => {
       items: cartItems.map(item => {
         // Ensure color is sent correctly - use selectedColor if available, otherwise use first color from array
         const color = item.selectedColor || (item.color && item.color.length > 0 ? item.color[0] : "");
+
+        // Determine product image by matching selected color index to images array
+        const colorIndex = item.selectedColor && Array.isArray(item.color)
+          ? item.color.indexOf(item.selectedColor)
+          : -1;
+        const productImage = Array.isArray(item.images) && item.images.length > 0
+          ? (colorIndex >= 0 && colorIndex < item.images.length
+              ? item.images[colorIndex]
+              : item.images[0])
+          : undefined;
         
         return {
           productId: item.productId || item.id,
           quantity: item.quantity,
           price: item.price,
+          productName: item.name,
+          productImage,
           color: color, // Make sure color is always a string, not undefined
         };
       }),
