@@ -292,8 +292,9 @@ export async function getAllOrdersAdmin(params: {
   sortBy?: string;
   sortDirection?: 'ASC' | 'DESC';
   token?: string;
+  text?: string;
 }): Promise<PagedOrders | null> {
-  const { page = 1, size = 10, sortBy = 'createdAt', sortDirection = 'DESC', token } = params;
+  const { page = 1, size = 10, sortBy = 'createdAt', sortDirection = 'DESC', token, text } = params;
   
   // Try to get token from params or cookies (admin_token for admin routes)
   const authToken = token || Cookies.get('admin_token') || Cookies.get('auth_token');
@@ -310,8 +311,13 @@ export async function getAllOrdersAdmin(params: {
       sortBy,
       sortDirection,
     }).toString();
+    const url = new URL(`${API_URL}/admin/orders`);
+    url.search = query;
+    if (text) {
+      url.searchParams.append('search', text);
+    }
 
-    const response = await fetch(`${API_URL}/admin/orders?${query}`, {
+    const response = await fetch(url.toString(), {
       headers: {
         'Authorization': `Bearer ${authToken}`,
         'Content-Type': 'application/json'
@@ -409,5 +415,37 @@ export async function updateOrderAdmin(
   } catch (error: any) {
     console.error('updateOrderAdmin error:', error);
     throw error;
+  }
+}
+
+/**
+ * Update order status (admin)
+ */
+export async function updateOrderStatusAdmin(
+  orderId: number,
+  status: 'pending' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded',
+  token?: string
+): Promise<Order> {
+  const authToken = token || Cookies.get('admin_token') || Cookies.get('auth_token');
+  if (!authToken) {
+    throw new Error('Please login to update order status');
+  }
+  try {
+    const response = await fetch(`${API_URL}/admin/orders/${orderId}/status`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ status })
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || errorData.error || 'Failed to update order status');
+    }
+    const data = await response.json();
+    return data as Order;
+  } catch (error: any) {
+    throw new Error(error.message || 'Failed to update order status');
   }
 }

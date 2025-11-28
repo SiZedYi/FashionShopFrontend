@@ -17,6 +17,7 @@ const OrdersPage = async ({ searchParams }: PageProps) => {
   const sizeParam = typeof searchParams?.size === "string" ? searchParams?.size : Array.isArray(searchParams?.size) ? searchParams?.size?.[0] : undefined;
   const sortByParam = typeof searchParams?.sortBy === "string" ? searchParams?.sortBy : "createdAt";
   const sortDirectionParam = typeof searchParams?.sortDirection === "string" ? (searchParams?.sortDirection as 'ASC' | 'DESC') : "DESC";
+  const textParam = typeof searchParams?.text === "string" ? searchParams?.text : Array.isArray(searchParams?.text) ? searchParams?.text?.[0] : undefined;
 
   const page = Number(pageParam) > 0 ? Number(pageParam) : 1;
   const size = Number(sizeParam) > 0 ? Number(sizeParam) : 10;
@@ -30,7 +31,8 @@ const OrdersPage = async ({ searchParams }: PageProps) => {
     size, 
     sortBy: sortByParam,
     sortDirection: sortDirectionParam,
-    token 
+    token,
+    text: textParam
   });
   
   const orders = ordersData?.data || [];
@@ -41,6 +43,8 @@ const OrdersPage = async ({ searchParams }: PageProps) => {
   const getStatusColor = (status: string) => {
     const upperStatus = status.toUpperCase();
     switch (upperStatus) {
+      case "PAID":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
       case "DELIVERED":
         return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
       case "SHIPPED":

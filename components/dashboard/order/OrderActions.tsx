@@ -17,6 +17,9 @@ import {
 
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
+import { updateOrderStatusAdmin } from "@/service/order";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface OrderActionsProps {
   orderId: number;
@@ -24,14 +27,26 @@ interface OrderActionsProps {
 }
 
 const OrderActions = ({ orderId, orderNumber }: OrderActionsProps) => {
-  const handleStatusChange = (newStatus: string) => {
-    // TODO: Implement status change functionality
-    console.log(`Changing order ${orderNumber} status to:`, newStatus);
+  const router = useRouter();
+
+  const handleStatusChange = async (newStatus: string) => {
+    try {
+      const updated = await updateOrderStatusAdmin(orderId, newStatus as any);
+      toast.success(`Status updated to ${updated.status.toUpperCase()}`);
+      router.refresh();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update status");
+    }
   };
 
-  const handleCancelOrder = () => {
-    // TODO: Implement cancel order functionality
-    console.log(`Canceling order ${orderNumber}`);
+  const handleCancelOrder = async () => {
+    try {
+      const updated = await updateOrderStatusAdmin(orderId, 'cancelled');
+      toast.success(`Order ${orderNumber} cancelled`);
+      router.refresh();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to cancel order");
+    }
   };
 
   return (
@@ -55,9 +70,11 @@ const OrderActions = ({ orderId, orderNumber }: OrderActionsProps) => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="paid">Paid</SelectItem>
               <SelectItem value="processing">Processing</SelectItem>
               <SelectItem value="shipped">Shipped</SelectItem>
               <SelectItem value="delivered">Delivered</SelectItem>
+              <SelectItem value="refunded">Refunded</SelectItem>
             </SelectContent>
           </Select>
           <button 
