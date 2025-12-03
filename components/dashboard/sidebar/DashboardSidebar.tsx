@@ -54,6 +54,18 @@ const DashboardSidebar = () => {
       icon: <Users size={20} />,
       isActive: pathname.includes("dashboard/customers"),
     },
+    {
+      link: "/dashboard/roles",
+      label: "Roles",
+      icon: <Users size={20} />,
+      isActive: pathname.includes("dashboard/roles"),
+    },
+    {
+      link: "/dashboard/permissions",
+      label: "Permissions",
+      icon: <Book size={20} />,
+      isActive: pathname.includes("dashboard/permissions"),
+    },
   ];
 
   return (

@@ -11,12 +11,17 @@ import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { usePermission } from "@/hooks/usePermission";
 
 const ProductActions = ({ productId }: { productId: number }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const { canAccess } = usePermission();
+
+  const canEdit = canAccess('PRODUCTS', 'WRITE');
+  const canDelete = canAccess('PRODUCTS', 'DELETE');
 
   const handleDelete = async () => {
     setLoading(true);
@@ -60,19 +65,23 @@ const ProductActions = ({ productId }: { productId: number }) => {
           >
             View Product
           </Link>
-          <Link
-            href={`/dashboard/products/${productId}`}
-            className="py-2 px-4 rounded-md w-full  block hover:bg-slate-100 dark:hover:bg-slate-900"
-          >
-            Update Product
-          </Link>
-          <button
-            className="w-full text-start hover:bg-slate-100 dark:hover:bg-slate-900 py-2 px-4 rounded-md"
-            onClick={() => setOpen(true)}
-            disabled={loading}
-          >
-            {loading ? "Deleting..." : "Delete Product"}
-          </button>
+          {canEdit && (
+            <Link
+              href={`/dashboard/products/${productId}`}
+              className="py-2 px-4 rounded-md w-full  block hover:bg-slate-100 dark:hover:bg-slate-900"
+            >
+              Update Product
+            </Link>
+          )}
+          {canDelete && (
+            <button
+              className="w-full text-start hover:bg-slate-100 dark:hover:bg-slate-900 py-2 px-4 rounded-md text-red-600 dark:text-red-400"
+              onClick={() => setOpen(true)}
+              disabled={loading}
+            >
+              {loading ? "Deleting..." : "Delete Product"}
+            </button>
+          )}
         </PopoverContent>
       </Popover>
       <Dialog open={open} onOpenChange={setOpen}>

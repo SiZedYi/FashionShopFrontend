@@ -7,11 +7,12 @@ import { useRouter, usePathname } from "next/navigation";
 import Cookies from "js-cookie";
 import { Toaster } from "sonner";
 import { useAdminAuthStore } from "@/store/adminAuthStore";
+import { decodeAdminToken } from "@/lib/auth";
 
 const layout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const pathname = usePathname();
-  const { hydrate } = useAdminAuthStore();
+  const { hydrate, setAdminUser } = useAdminAuthStore();
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
@@ -30,9 +31,20 @@ const layout = ({ children }: { children: React.ReactNode }) => {
     if (!adminToken) {
       router.push("/login");
     } else {
+      // Decode token to get user info and permissions
+      const decoded = decodeAdminToken();
+      if (decoded) {
+        setAdminUser({
+          id: parseInt(decoded.sub),
+          fullName: decoded.fullName,
+          email: decoded.email,
+          roles: decoded.roles || [],
+          permissions: decoded.permissions || [],
+        });
+      }
       setIsChecking(false);
     }
-  }, [pathname, router, hydrate]);
+  }, [pathname, router, hydrate, setAdminUser]);
 
   // If on login page, render without header/sidebar
   if (pathname === "/login") {
