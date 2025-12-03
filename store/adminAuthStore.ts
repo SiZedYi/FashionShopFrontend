@@ -1,11 +1,13 @@
 import { create } from 'zustand';
 import Cookies from 'js-cookie';
+import { decodeAdminToken } from '@/lib/auth';
 
 interface AdminUser {
   id: number;
   fullName: string;
   email: string;
   roles: string[];
+  permissions: string[];
 }
 
 type AdminAuthState = {
@@ -14,6 +16,10 @@ type AdminAuthState = {
   clearAdminUser: () => void;
   hydrate: () => void;
   isAuthenticated: () => boolean;
+  hasPermission: (permission: string) => boolean;
+  hasAnyPermission: (permissions: string[]) => boolean;
+  hasAllPermissions: (permissions: string[]) => boolean;
+  getPermissions: () => string[];
 };
 
 export const useAdminAuthStore = create<AdminAuthState>((set, get) => ({
@@ -52,5 +58,28 @@ export const useAdminAuthStore = create<AdminAuthState>((set, get) => ({
     const token = Cookies.get('admin_token');
     const user = get().adminUser;
     return !!token && !!user;
+  },
+  
+  hasPermission: (permission: string) => {
+    const user = get().adminUser;
+    if (!user || !user.permissions) return false;
+    return user.permissions.includes(permission);
+  },
+  
+  hasAnyPermission: (permissions: string[]) => {
+    const user = get().adminUser;
+    if (!user || !user.permissions) return false;
+    return permissions.some(p => user.permissions.includes(p));
+  },
+  
+  hasAllPermissions: (permissions: string[]) => {
+    const user = get().adminUser;
+    if (!user || !user.permissions) return false;
+    return permissions.every(p => user.permissions.includes(p));
+  },
+  
+  getPermissions: () => {
+    const user = get().adminUser;
+    return user?.permissions || [];
   }
 }));

@@ -3,12 +3,14 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { usePermission } from "@/hooks/usePermission";
 
 const ProductHeader = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const [keyword, setKeyword] = useState(searchParams.get("keyword") || "");
+  const { canAccess } = usePermission();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,12 +42,14 @@ const ProductHeader = () => {
         >
           Search
         </button>
-        <Link
-          href="/dashboard/products/add-product"
-          className="px-4 py-2 text-sm font-semibold text-white bg-green-500 hover:bg-green-600 rounded-lg whitespace-nowrap"
-        >
-          Add Product
-        </Link>
+        {canAccess('PRODUCTS', 'WRITE') && (
+          <Link
+            href="/dashboard/products/add-product"
+            className="px-4 py-2 text-sm font-semibold text-white bg-green-500 hover:bg-green-600 rounded-lg whitespace-nowrap"
+          >
+            Add Product
+          </Link>
+        )}
       </form>
     </div>
   );
