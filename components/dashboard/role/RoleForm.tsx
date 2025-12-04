@@ -32,9 +32,9 @@ const RoleForm: React.FC<RoleFormProps> = ({ role, onSuccess }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [permissions, setPermissions] = useState<Permission[]>([]);
-  const [selectedPermissions, setSelectedPermissions] = useState<number[]>(
-    role?.permissions?.map(p => p.id) || []
-  );
+  const [selectedPermissions, setSelectedPermissions] = useState<number[]>([]);
+
+  console.log('Initial role:', role);
 
   const {
     register,
@@ -46,7 +46,7 @@ const RoleForm: React.FC<RoleFormProps> = ({ role, onSuccess }) => {
     defaultValues: {
       name: role?.name || "",
       description: role?.description || "",
-      permissionIds: role?.permissions?.map(p => p.id) || [],
+      permissionIds: [],
     },
   });
 
@@ -55,12 +55,42 @@ const RoleForm: React.FC<RoleFormProps> = ({ role, onSuccess }) => {
       try {
         const data = await getAllPermissions();
         setPermissions(data);
+        
+        // Map role permission names to permission IDs after fetching permissions
+        if (role && role.permissions && Array.isArray(role.permissions)) {
+          // Check if permissions are strings (permission names) or objects
+          const rolePermissions = role.permissions;
+          
+          if (rolePermissions.length > 0 && typeof rolePermissions[0] === 'string') {
+            // Permissions are strings (names), map to IDs
+            const permissionIds = data
+              .filter(p => (rolePermissions as string[]).includes(p.name))
+              .map(p => p.id);
+            
+            console.log('Mapped permission IDs from names:', permissionIds);
+            setSelectedPermissions(permissionIds);
+            setValue("permissionIds", permissionIds, { shouldValidate: true });
+          } else {
+            // Permissions are objects, extract IDs
+            const permissionIds = (rolePermissions as Permission[])
+              .map(p => p.id)
+              .filter((id): id is number => typeof id === 'number');
+            
+            console.log('Extracted permission IDs from objects:', permissionIds);
+            setSelectedPermissions(permissionIds);
+            setValue("permissionIds", permissionIds, { shouldValidate: true });
+          }
+        } else {
+          // No role or no permissions, reset to empty
+          setSelectedPermissions([]);
+          setValue("permissionIds", []);
+        }
       } catch (error) {
         toast.error("Failed to load permissions");
       }
     };
     fetchPermissions();
-  }, []);
+  }, [role, setValue]);
 
   const handlePermissionToggle = (permissionId: number) => {
     const newSelected = selectedPermissions.includes(permissionId)
@@ -68,28 +98,38 @@ const RoleForm: React.FC<RoleFormProps> = ({ role, onSuccess }) => {
       : [...selectedPermissions, permissionId];
     
     setSelectedPermissions(newSelected);
-    setValue("permissionIds", newSelected);
+    setValue("permissionIds", newSelected, { shouldValidate: true });
+    console.log('Selected permissions:', newSelected);
   };
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setIsLoading(true);
 
     try {
+      console.log('Submitting role data:', data);
+      console.log('Role ID:', role?.id);
+      
       if (role) {
-        await updateRole(role.id, data);
+        const result = await updateRole(role.id, data);
+        console.log('Update result:', result);
         toast.success("Role updated successfully!");
+        
+        // Redirect to roles list after update to see fresh data
+        router.push("/dashboard/roles");
+        router.refresh();
       } else {
-        await createRole(data);
+        const result = await createRole(data);
+        console.log('Create result:', result);
         toast.success("Role created successfully!");
+        router.push("/dashboard/roles");
+        router.refresh();
       }
       
-      router.refresh();
       if (onSuccess) {
         onSuccess();
-      } else {
-        router.push("/dashboard/roles");
       }
     } catch (error: any) {
+      console.error('Submit error:', error);
       toast.error(error.message || "Failed to save role");
     } finally {
       setIsLoading(false);

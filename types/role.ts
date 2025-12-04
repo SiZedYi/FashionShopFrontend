@@ -4,7 +4,7 @@ export interface Role {
   id: number;
   name: string;
   description: string;
-  permissions?: Permission[];
+  permissions?: Permission[] | string[]; // Can be array of Permission objects or permission names
   createdAt?: string;
   updatedAt?: string;
 }
