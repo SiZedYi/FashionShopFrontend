@@ -93,7 +93,7 @@ function HeroBanner() {
           )}
 
           {sliders.map((s, idx) => {
-            const image = `${process.env.NEXT_PUBLIC_IMAGE_URL}/${s.imageUrl}`;
+            const image = `${process.env.NEXT_PUBLIC_IMAGE_URL}${s.imageUrl}`;
             const textAlign = s.textAlign || "center";
             const alignClass =
               textAlign === "left"
