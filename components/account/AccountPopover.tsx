@@ -25,7 +25,7 @@ const AccountPopover = () => {
   const handleLogout = () => {
     try { Cookies.remove('auth_token'); } catch {}
     clearUser();
-    showToast('Logged out', '/images/products/placeholder.png', 'You have been signed out');
+    showToast('Logged out', 'You have been signed out');
     router.replace('/');
   };
 

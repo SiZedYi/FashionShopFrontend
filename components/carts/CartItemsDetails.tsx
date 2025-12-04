@@ -121,7 +121,6 @@ const CartItemsDetails = () => {
                   removeFromCart(item.id, item.selectedColor);
                   showToast(
                     "Item Removed from Cart",
-                    (item?.images && item.images[0]) || "",
                     item.name || ""
                   );
                 } else {

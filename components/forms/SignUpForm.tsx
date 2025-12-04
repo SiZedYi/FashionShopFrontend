@@ -64,7 +64,7 @@ const SignUpForm: React.FC = () => {
       // Prefer backend provided user object if exists
       const userObj = res.user || { fullName: payload.fullName, email: payload.email, phone: payload.phone, roles: [], isActive: true, createdAt: new Date().toISOString() };
       setUser(userObj);
-      showToast('Registration Success', '/images/products/placeholder.png', `Welcome ${payload.fullName}`);
+      showToast('Registration Success', `Welcome ${payload.fullName}`);
       router.replace(redirectUrl);
     } catch (e: any) {
       setError(e.message || 'Registration failed');

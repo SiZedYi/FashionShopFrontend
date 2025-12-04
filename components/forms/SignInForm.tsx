@@ -46,7 +46,7 @@ const SignInForm = () => {
       if (res.user) {
         setUser(res.user);
       }
-      showToast('Login Success', '/images/products/placeholder.png', `Welcome back ${res?.user?.fullName || ''}`);
+      showToast('Login Success', `Welcome back ${res?.user?.fullName || ''}`);
       router.replace(redirectUrl);
     } catch (e: any) {
       setError(e.message || 'Login failed');

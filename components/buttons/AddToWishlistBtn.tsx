@@ -10,10 +10,10 @@ const AddToWishlistBtn = ({product}:{product:Product}) => {
 
   const handleAddToWishList = () => {
     if(isInWishlist(product.id)){
-      showToast('Item Already Exist In Wishlist',product.images[0] as string, product.name)
+      showToast('Item Already Exist In Wishlist', product.name)
     }else{
       addToWishlist(product);
-    showToast('Item Added To The Wishlist',product.images[0] as string, product.name)
+      showToast('Item Added To The Wishlist', product.name)
     }
   }
 

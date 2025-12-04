@@ -36,7 +36,6 @@ const Cart = () => {
     removeFromCart(item.id, item.selectedColor);
     showToast(
       "Item Removed from Cart",
-      (item?.images && item.images[0]) || "",
       item.name
     );
   };
@@ -53,7 +52,6 @@ const Cart = () => {
       removeFromCart(item.id, item.selectedColor);
       showToast(
         "Item Removed from Cart",
-        (item?.images && item.images[0]) || "",
         item.name
       );
     } else {

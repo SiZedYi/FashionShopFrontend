@@ -35,17 +35,15 @@ const ProductOptions = ({ product }: { product: Product }) => {
     const defaultColor = product.color && product.color.length > 0 ? product.color[0] : "";
     addToCart({ ...product, quantity: 1, selectedColor: defaultColor });
     // Ensure image path is valid before showing toast
-    const imagePath = images && images[0] ? images[0] : "";
-    showToast("Item Added To Cart", imagePath, name);
+    showToast("Item Added To Cart", name);
   };
 
   const handleAddToWishList = () => {
-    const imagePath = images && images[0] ? images[0] : "";
     if (isInWishlist(product.id)) {
-      showToast("Item Added To Wishlist", imagePath, name);
+      showToast("Item Added To Wishlist", name);
     } else {
       addToWishlist(product);
-      showToast("Item Already Exist In Wishlist", imagePath, name);
+      showToast("Item Already Exist In Wishlist", name);
     }
   };
 

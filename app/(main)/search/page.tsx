@@ -1,7 +1,7 @@
 import BreadcrumbComponent from "@/components/others/Breadcrumb";
 import SingleProductCartView from "@/components/product/SingleProductCartView";
 import SingleProductListView from "@/components/product/SingleProductListView";
-import { getAllProduct } from "@/service/product";
+import { searchProducts } from "@/service/search";
 import Link from "next/link";
 
 const SearchComponent = async ({
@@ -9,11 +9,7 @@ const SearchComponent = async ({
 }: {
   searchParams: { query: string };
 }) => {
-  const productsData = await getAllProduct().then((res) => res?.data) || [];
-  // Filter the products based on the search query
-  const foundProducts = productsData.filter((product) =>
-    product.name.toLowerCase().includes(searchParams.query.toLowerCase())
-  );
+  const foundProducts = await searchProducts(searchParams.query || '', 1, 20);
 
 
   if (foundProducts.length === 0) {
