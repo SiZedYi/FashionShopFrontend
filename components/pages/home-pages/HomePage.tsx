@@ -1,5 +1,3 @@
-import BannerTwo from "@/components/banners/BannerTwo";
-import LatestBlogPosts from "@/components/blog/LatestBlogPosts";
 import CategorySection from "@/components/category/CategorySection";
 import HeroBanner from "@/components/hero/HeroBanner";
 import NewsLetterTwo from "@/components/newsLetter/NewsLetterTwo";
@@ -18,9 +16,7 @@ const HomePage = () => {
       </Suspense>
       <ProductsCollectionTwo />
       <BenefitsSection textCenter={true} />
-      <BannerTwo />
       <TestimonialsSection textCenter={true} />
-      <LatestBlogPosts twoColunmHeader={false} />
       <NewsLetterTwo />
     </div>
   );

@@ -3,19 +3,8 @@ import { Slider } from "../types/slider";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function getActiveSliders(token?: string): Promise<Slider[] | null> {
-  const authToken = token || Cookies.get('admin_token') || Cookies.get('auth_token');
-
-  if (!authToken) {
-    console.error('No authentication token available');
-    return null;
-  }
-
   try {
     const res = await fetch(`${API_URL}/sliders/active`, {
-      headers: {
-        'Authorization': `Bearer ${authToken}`,
-        'Content-Type': 'application/json',
-      },
       cache: 'no-store',
     });
     if (!res.ok) {
