@@ -3,6 +3,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +11,7 @@ import { Pill } from "@/components/ui/pill";
 import { getAllCategories, type Category } from "@/service/category";
 import { createProduct, updateProduct } from "@/service/product";
 import { COLOR_OPTIONS } from "@/const/color";
+import { toast } from "sonner";
 
 // Define the schema for form validation
 const productSchema = z.object({
@@ -56,6 +58,7 @@ type ProductFormProps = {
   product?: any; // product detail from API for prefilling (images not required)
 };
 const ProductForm = ({ action, productId, product }: ProductFormProps) => {
+  const router = useRouter();
   const {
     handleSubmit,
     register,
@@ -295,11 +298,19 @@ const ProductForm = ({ action, productId, product }: ProductFormProps) => {
         throw new Error(message);
       }
 
-      // Success: reset form
-      reset();
+      // Success: show toast and redirect
+      if (action === "update") {
+        toast.success("Product updated successfully!");
+      } else {
+        toast.success("Product created successfully!");
+        reset();
+      }
+      router.push("/dashboard/products");
+      router.refresh();
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error("Submit product error:", err);
+      toast.error(err instanceof Error ? err.message : "Failed to save product");
     }
   };
 
