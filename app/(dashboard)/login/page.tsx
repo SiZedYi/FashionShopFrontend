@@ -54,7 +54,8 @@ const DashboardLoginPage = () => {
         id: user.id,
         fullName: user.fullName,
         email: user.email,
-        roles: user.roles
+        roles: user.roles,
+        permissions: user.permissions || []
       });
 
       toast.success("Đăng nhập thành công!");

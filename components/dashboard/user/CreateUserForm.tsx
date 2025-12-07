@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { createUser } from '@/service/user';
+import { getAllRoles } from '@/service/role';
 import { toast } from 'sonner';
 
 const schema = z.object({
@@ -18,6 +19,7 @@ const schema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
   phone: z.string().optional(),
   isActive: z.boolean().default(true),
+  roles: z.array(z.string()).min(1, 'At least one role is required'),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -29,6 +31,8 @@ interface CreateUserFormProps {
 const CreateUserForm: React.FC<CreateUserFormProps> = ({ onSuccess }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [availableRoles, setAvailableRoles] = useState<string[]>([]);
+  const [isLoadingRoles, setIsLoadingRoles] = useState(true);
 
   const {
     register,
@@ -44,16 +48,48 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onSuccess }) => {
       password: '',
       phone: '',
       isActive: true,
+      roles: [],
     },
   });
 
   const isActive = watch('isActive');
+  const selectedRoles = watch('roles');
+
+  // Fetch available roles on mount
+  React.useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        setIsLoadingRoles(true);
+        const roles = await getAllRoles();
+        const roleNames = roles.map((role: any) => role.name);
+        setAvailableRoles(roleNames);
+      } catch (error) {
+        console.error('Failed to fetch roles:', error);
+        toast.error('Failed to load roles');
+      } finally {
+        setIsLoadingRoles(false);
+      }
+    };
+
+    fetchRoles();
+  }, []);
+
+  const handleRoleToggle = (role: string) => {
+    const newRoles = selectedRoles.includes(role)
+      ? selectedRoles.filter((r) => r !== role)
+      : [...selectedRoles, role];
+    setValue('roles', newRoles, { shouldValidate: true });
+  };
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setIsLoading(true);
 
     try {
-      await createUser(data);
+      const payload = {
+        ...data,
+        phone: data.phone || '',
+      };
+      await createUser(payload);
       toast.success('User created successfully!');
       router.refresh();
       if (onSuccess) {
@@ -137,6 +173,36 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onSuccess }) => {
         >
           Active Status
         </Label>
+      </div>
+
+      <div className="space-y-2">
+        <Label>Assign Roles *</Label>
+        {isLoadingRoles ? (
+          <p className="text-sm text-gray-500">Loading roles...</p>
+        ) : availableRoles.length === 0 ? (
+          <p className="text-sm text-gray-500">No roles available</p>
+        ) : (
+          <div className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 space-y-2 max-h-60 overflow-y-auto">
+            {availableRoles.map((role) => (
+              <div key={role} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`role-${role}`}
+                  checked={selectedRoles.includes(role)}
+                  onCheckedChange={() => handleRoleToggle(role)}
+                />
+                <Label
+                  htmlFor={`role-${role}`}
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                >
+                  {role}
+                </Label>
+              </div>
+            ))}
+          </div>
+        )}
+        {errors.roles && (
+          <span className="text-red-500 text-sm">{errors.roles.message}</span>
+        )}
       </div>
 
       <div className="flex justify-end gap-2">

@@ -137,7 +137,6 @@ const ShopPageContainer = ({
         <Pagination
           totalPages={totalPages}
           currentPage={currentPage}
-          onPageChange={setCurrentPage}
         />
       </Suspense>
     </div>

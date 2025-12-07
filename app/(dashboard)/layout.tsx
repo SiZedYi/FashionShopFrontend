@@ -9,7 +9,7 @@ import { Toaster } from "sonner";
 import { useAdminAuthStore } from "@/store/adminAuthStore";
 import { decodeAdminToken } from "@/lib/auth";
 
-const layout = ({ children }: { children: React.ReactNode }) => {
+const Layout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const pathname = usePathname();
   const { hydrate, setAdminUser } = useAdminAuthStore();
@@ -79,4 +79,4 @@ const layout = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export default layout;
+export default Layout;

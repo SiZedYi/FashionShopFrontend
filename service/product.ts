@@ -57,7 +57,6 @@ export async function getAllProduct(
 
   const json = await res.json();
     json?.data?.forEach((p: any, i: number) => {
-      console.log(`Product #${i} images count:`, p.images?.length);
     });
     // Basic validation: ensure shape contains data array
     if (!json || !Array.isArray(json.data)) {

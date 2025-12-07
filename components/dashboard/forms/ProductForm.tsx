@@ -12,6 +12,7 @@ import { getAllCategories, type Category } from "@/service/category";
 import { createProduct, updateProduct } from "@/service/product";
 import { COLOR_OPTIONS } from "@/const/color";
 import { toast } from "sonner";
+import Image from "next/image";
 
 // Define the schema for form validation
 const productSchema = z.object({
@@ -569,9 +570,11 @@ const ProductForm = ({ action, productId, product }: ProductFormProps) => {
                           <div className="flex flex-wrap gap-2">
                             {currentImages.map((img: string, idx: number) => (
                               <div key={idx} className="relative">
-                                <img
+                                <Image
                                   src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${img}`}
                                   alt={`${color} ${idx + 1}`}
+                                  width={80}
+                                  height={80}
                                   className="h-20 w-20 object-cover rounded border dark:border-gray-600"
                                 />
                               </div>

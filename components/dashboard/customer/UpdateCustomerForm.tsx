@@ -101,7 +101,7 @@ const UpdateCustomerForm = ({ customer }: UpdateCustomerFormProps) => {
             className="w-full"
           />
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            Only fill this if you want to change the customer's password
+            Only fill this if you want to change the customer&apos;s password
           </p>
         </div>
 

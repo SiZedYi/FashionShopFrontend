@@ -6,7 +6,7 @@ import Image from "next/image";
 import ProductOptions from "./ProductOptions";
 import { calculateDiscount } from "@/lib/calculateDiscount";
 import { useRouter } from "next/navigation";
-import { Product } from "@/service/product";
+import { Product } from "@/types/product";
 
 const SingleProductCartView = ({ product }: { product: Product }) => {
   const [isMounted, setIsMounted] = useState(false);
