@@ -69,7 +69,6 @@ export async function getAllRoles(token?: string): Promise<Role[]> {
         'Authorization': `Bearer ${authToken}`,
         'Content-Type': 'application/json'
       },
-      cache: 'no-store'
     });
 
     if (!response.ok) {

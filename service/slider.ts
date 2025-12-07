@@ -5,7 +5,6 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export async function getActiveSliders(token?: string): Promise<Slider[] | null> {
   try {
     const res = await fetch(`${API_URL}/sliders/active`, {
-      cache: 'no-store',
     });
     if (!res.ok) {
       console.error('getActiveSliders failed', res.status, res.statusText);

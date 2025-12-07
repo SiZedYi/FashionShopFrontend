@@ -69,7 +69,6 @@ export async function getAllPermissions(token?: string): Promise<Permission[]> {
         'Authorization': `Bearer ${authToken}`,
         'Content-Type': 'application/json'
       },
-      cache: 'no-store'
     });
 
     if (!response.ok) {

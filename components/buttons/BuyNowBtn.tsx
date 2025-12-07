@@ -2,7 +2,7 @@
 import React from 'react'
 import { Button } from '../ui/button'
 import { ArrowRight } from 'lucide-react'
-import { CartItem } from '@/types'
+import { CartItem } from "@/types/cart";
 import useCartStore from '@/store/cartStore'
 import { useRouter } from 'next/navigation'
 

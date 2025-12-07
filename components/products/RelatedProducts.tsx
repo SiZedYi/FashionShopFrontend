@@ -1,6 +1,6 @@
 import React from 'react'
 import SingleProductCartView from '../product/SingleProductCartView';
-import { Product } from '@/types';
+import { Product } from '@/types/product';
 
 
 interface RelatedProductsProps {

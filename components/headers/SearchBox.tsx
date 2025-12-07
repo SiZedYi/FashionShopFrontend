@@ -137,7 +137,7 @@ const SearchBox = () => {
                 }}
                 className="w-full text-left px-3 py-2 text-sm text-blue-600 hover:bg-gray-100 dark:hover:bg-gray-800"
               >
-                View all results for "{searchTerm}"
+                View all results for &quot;{searchTerm}&quot;
               </button>
             </div>
           )}

@@ -1,9 +1,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { productsData } from "@/data/products/productsData";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import SingleProductCartView from "../product/SingleProductCartView";
-import { getAllProduct, Product } from "@/service/product";
+import { getAllProduct } from "@/service/product";
 
 const ProductsCollectionTwo = async () => {
 const data = await getAllProduct().then(res => res?.data);

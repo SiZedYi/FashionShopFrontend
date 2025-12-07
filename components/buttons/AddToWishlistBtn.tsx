@@ -1,7 +1,7 @@
 'use client'
 import React from "react";
 import { Button } from "../ui/button";
-import { Product,} from "@/types";
+import { Product } from "@/types/product";
 import useWishlistStore from "@/store/wishlistStore";
 import { showToast } from "@/lib/showToast";
 
