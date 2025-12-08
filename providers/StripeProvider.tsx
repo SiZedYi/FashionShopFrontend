@@ -32,6 +32,7 @@ export const StripeProvider: React.FC<StripeProviderProps> = ({
             spacingUnit: "4px",
             borderRadius: "8px",
           },
+          assistant: { enabled: false },
         },
       }
     : undefined;
