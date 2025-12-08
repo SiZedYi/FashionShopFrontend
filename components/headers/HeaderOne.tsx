@@ -50,7 +50,7 @@ const HeaderOne = () => {
               {link.label}
             </Link>
           ))}
-          <DropdownMenuComponent />
+          {/* <DropdownMenuComponent /> */}
         </ul>
         <div className="flex items-center gap-6 ">
           {/* mobile search option */}
