@@ -65,8 +65,8 @@ const StripePaymentModal: React.FC<StripePaymentModalProps> = ({
 	}, [stripe, elements, onPaymentError, onPaymentSuccess]);
 
 	return (
-		<Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
-			<DialogContent className="max-w-xl p-0">
+		<Dialog open={isOpen}>
+			<DialogContent className="max-w-xl p-0" onInteractOutside={e => e.preventDefault()}>
 				<DialogHeader className="px-6 pt-6">
 					<DialogTitle className="text-xl">Complete Payment</DialogTitle>
 				</DialogHeader>
