@@ -6,7 +6,10 @@ import { Elements } from "@stripe/react-stripe-js";
 
 // Load Stripe outside of component render to avoid recreating object on each render
 const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "",
+  {
+    developerTools: { assistant: { enabled: false } },
+  }
 );
 
 interface StripeProviderProps {
