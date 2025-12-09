@@ -20,7 +20,7 @@ const SingleProductListView = ({ product }: { product: Product }) => {
       className="group flex flex-col lg:flex-row lg:items-start items-center justify-center gap-4 relative space-y-4 p-4 md:p-8 border"
     >
       <div className="flex-shrink-0 w-[20rem] h-[18rem] relative rounded-md overflow-hidden bg-gray-200">
-        <Image src={images[0]} alt={name} fill className="object-cover" />
+        <Image src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${images[0]}`} alt={name} fill className="object-cover" />
       </div>
       <div className="">
         <p className="text-sm text-sky-500 font-light">{category}</p>
