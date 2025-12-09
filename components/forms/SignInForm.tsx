@@ -47,7 +47,8 @@ const SignInForm = () => {
         setUser(res.user);
       }
       showToast('Login Success', `Welcome back ${res?.user?.fullName || ''}`);
-      router.replace(redirectUrl);
+      // Use window.location to force full page reload and trigger middleware
+      window.location.href = redirectUrl;
     } catch (e: any) {
       setError(e.message || 'Login failed');
     } finally {

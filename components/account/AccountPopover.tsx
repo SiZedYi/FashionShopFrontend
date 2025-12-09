@@ -26,7 +26,8 @@ const AccountPopover = () => {
     try { Cookies.remove('auth_token'); } catch {}
     clearUser();
     showToast('Logged out', 'You have been signed out');
-    router.replace('/');
+    // Use window.location to force full page reload and trigger middleware
+    window.location.href = '/';
   };
 
   const userLinks = [

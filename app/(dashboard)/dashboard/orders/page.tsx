@@ -101,7 +101,7 @@ const OrdersPage = async ({ searchParams }: PageProps) => {
                 Phone
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                City
+                Country
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Total Amount
@@ -140,7 +140,7 @@ const OrdersPage = async ({ searchParams }: PageProps) => {
                     {order.shippingAddress?.phone || "-"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                    {order.shippingAddress?.city || "-"}
+                    {order.shippingAddress?.country || "-"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-white">
                     {formatPrice(order.totalAmount)}
