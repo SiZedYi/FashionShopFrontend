@@ -81,10 +81,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ action, category, token }) 
       }
 
       setSuccess(`Category ${action === 'add' ? 'added' : 'updated'} successfully!`);
-      router.refresh();
-      if (action === 'add') {
-        router.push('/dashboard/categories');
-      }
+      router.push('/dashboard/categories');
     } catch (err: any) {
       setError(err.message || "Operation failed");
     } finally {
